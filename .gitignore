@@ -1,0 +1,20 @@
+# Ignore bundler config.
+/.bundle
+
+# Ignore Gemfile.lock
+/Gemfile.lock
+/gemfiles/*.lock
+/gemfiles/.bundle
+
+# Ignore test files
+/coverage
+/tmp
+
+# Ignore sqlite db file
+/ajax_datatables_rails
+
+# RVM files
+/.ruby-version
+
+# Gem files
+/*.gem

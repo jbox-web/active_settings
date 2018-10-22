@@ -1,0 +1,17 @@
+---
+bool: true
+foo: bar
+nested:
+  foo: bar
+deep:
+  nested:
+    warn_threshold: 100
+ary:
+  - foo
+  - bar
+ary_of_hash:
+  - { foo: 'bar' }
+  - { foo: 'bar' }
+ary_of_ary:
+  - ['foo', 'bar']
+  - ['foo', 'bar']

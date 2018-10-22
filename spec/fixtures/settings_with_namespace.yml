@@ -1,0 +1,33 @@
+---
+# Global config
+default: &default
+  bool: true
+  foo: bar
+  nested:
+    foo: bar
+  deep:
+    nested: &nested
+      warn_threshold: 100
+      warn_account: foo
+  ary:
+    - foo
+    - bar
+  ary_of_hash:
+    - { foo: 'bar' }
+    - { foo: 'bar' }
+  ary_of_ary:
+    - ['foo', 'bar']
+    - ['foo', 'bar']
+
+# Development config
+development:
+  <<: *default
+  foo: baz
+  deep:
+    nested:
+      <<: *nested
+      warn_threshold: 50
+
+production:
+  <<: *default
+  bool: false
