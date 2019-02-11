@@ -9,6 +9,7 @@ task default: :spec
 task :console do
   require 'pry'
   require 'active-settings'
+  puts 'Loaded ActiveSettings'
   ARGV.clear
   Pry.start
 end
