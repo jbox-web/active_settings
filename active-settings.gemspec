@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'dry-validation', '>= 0.10.4'
 
   s.add_development_dependency 'appraisal'
+  s.add_development_dependency 'guard-rspec'
   s.add_development_dependency 'pry'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec'
