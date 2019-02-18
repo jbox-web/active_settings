@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require 'active-settings/config'
-require 'active-settings/validation/schema'
-require 'active-settings/validation/validate'
-
 module ActiveSettings
   class Base < Config
     include Singleton

@@ -7,7 +7,11 @@ require 'ostruct'
 require 'singleton'
 
 require 'deep_merge'
+require 'dry-validation'
 require 'active_support/core_ext/module/attribute_accessors'
+
+require 'zeitwerk'
+Zeitwerk::Loader.for_gem.setup
 
 module ActiveSettings
 
@@ -28,6 +32,4 @@ module ActiveSettings
   @@overwrite_arrays      = false
   @@merge_nil_values      = true
   @@keep_array_duplicates = true
-
-  require 'active-settings/base'
 end

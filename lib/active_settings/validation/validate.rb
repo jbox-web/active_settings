@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'active-settings/validation/error'
-
 module ActiveSettings
   module Validation
     module Validate

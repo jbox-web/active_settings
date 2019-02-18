@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'dry-validation'
-
 module ActiveSettings
   module Validation
     module Schema
