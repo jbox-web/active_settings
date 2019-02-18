@@ -1,9 +1,9 @@
 # ActiveSettings
 
-[![GitHub license](https://img.shields.io/github/license/jbox-web/active-settings.svg)](https://github.com/jbox-web/active-settings/blob/master/LICENSE)
-[![Build Status](https://travis-ci.org/jbox-web/active-settings.svg?branch=master)](https://travis-ci.org/jbox-web/active-settings)
-[![Code Climate](https://codeclimate.com/github/jbox-web/active-settings/badges/gpa.svg)](https://codeclimate.com/github/jbox-web/active-settings)
-[![Test Coverage](https://codeclimate.com/github/jbox-web/active-settings/badges/coverage.svg)](https://codeclimate.com/github/jbox-web/active-settings/coverage)
+[![GitHub license](https://img.shields.io/github/license/jbox-web/active_settings.svg)](https://github.com/jbox-web/active_settings/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/jbox-web/active_settings.svg?branch=master)](https://travis-ci.org/jbox-web/active_settings)
+[![Code Climate](https://codeclimate.com/github/jbox-web/active_settings/badges/gpa.svg)](https://codeclimate.com/github/jbox-web/active_settings)
+[![Test Coverage](https://codeclimate.com/github/jbox-web/active_settings/badges/coverage.svg)](https://codeclimate.com/github/jbox-web/active_settings/coverage)
 
 
 ## Installation
@@ -11,7 +11,7 @@
 Put this in your `Gemfile` :
 
 ```ruby
-gem 'active-settings', git: 'https://github.com/jbox-web/active-settings.git'
+gem 'active_settings', git: 'https://github.com/jbox-web/active_settings.git'
 ```
 
 then run `bundle install`.
