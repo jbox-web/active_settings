@@ -1,6 +1,7 @@
 # ActiveSettings
 
 [![GitHub license](https://img.shields.io/github/license/jbox-web/active_settings.svg)](https://github.com/jbox-web/active_settings/blob/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/release/jbox-web/active_settings.svg)](https://github.com/jbox-web/active_settings/releases/latest)
 [![Build Status](https://travis-ci.org/jbox-web/active_settings.svg?branch=master)](https://travis-ci.org/jbox-web/active_settings)
 [![Code Climate](https://codeclimate.com/github/jbox-web/active_settings/badges/gpa.svg)](https://codeclimate.com/github/jbox-web/active_settings)
 [![Test Coverage](https://codeclimate.com/github/jbox-web/active_settings/badges/coverage.svg)](https://codeclimate.com/github/jbox-web/active_settings/coverage)
