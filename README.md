@@ -6,6 +6,7 @@
 [![Code Climate](https://codeclimate.com/github/jbox-web/active_settings/badges/gpa.svg)](https://codeclimate.com/github/jbox-web/active_settings)
 [![Test Coverage](https://codeclimate.com/github/jbox-web/active_settings/badges/coverage.svg)](https://codeclimate.com/github/jbox-web/active_settings/coverage)
 
+Settings in Rails.
 
 ## Installation
 
