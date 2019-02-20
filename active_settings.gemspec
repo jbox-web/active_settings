@@ -4,7 +4,7 @@ require_relative 'lib/active_settings/version'
 
 Gem::Specification.new do |s|
   s.name        = 'active_settings'
-  s.version     = ActiveSettings::VERSION
+  s.version     = ActiveSettings::VERSION::STRING
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Nicolas Rodriguez']
   s.email       = ['nicoladmin@free.fr']
