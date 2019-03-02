@@ -145,6 +145,32 @@ describe ActiveSettings::Base do
       end
     end
 
+    describe '#dig' do
+      context 'when nested string key exist' do
+        it 'should return value' do
+          expect(settings.dig('nested', 'foo')).to eq 'bar'
+        end
+      end
+
+      context 'when nested string key dont exist' do
+        it 'should return nil' do
+          expect(settings.dig('nested', 'bar')).to be nil
+        end
+      end
+
+      context 'when nested symbol key exist' do
+        it 'should return value' do
+          expect(settings.dig(:nested, :foo)).to eq 'bar'
+        end
+      end
+
+      context 'when nested symbol key dont exist' do
+        it 'should return nil' do
+          expect(settings.dig(:nested, :bar)).to be nil
+        end
+      end
+    end
+
     describe '#each' do
       it 'should iterate on Settings' do
         expect(settings.each.to_h).to eq({
