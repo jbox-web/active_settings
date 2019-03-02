@@ -2,6 +2,19 @@ require 'spec_helper'
 
 describe ActiveSettings::Base do
 
+  context 'when source file is nil' do
+    let(:settings) do
+      Class.new(ActiveSettings::Base) do
+      end
+    end
+
+    it 'should raise an error' do
+      expect {
+        settings.instance
+      }.to raise_error(ActiveSettings::Error::SourceFileNotDefinedError)
+    end
+  end
+
   context 'without namespace' do
     let(:settings) do
       Class.new(ActiveSettings::Base) do
