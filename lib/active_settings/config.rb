@@ -3,9 +3,6 @@
 module ActiveSettings
   class Config < OpenStruct
 
-    include Enumerable
-
-
     def each(*args, &block)
       marshal_dump.each(*args, &block)
     end
