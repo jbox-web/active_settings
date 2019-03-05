@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.summary     = 'A gem to manage Settings'
   s.license     = 'MIT'
 
-  s.required_ruby_version = '>= 2.4.0'
+  s.required_ruby_version = '>= 2.4.4'
 
   s.files = `git ls-files`.split("\n")
 
