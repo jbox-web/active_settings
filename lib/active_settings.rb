@@ -11,7 +11,8 @@ require 'dry-validation'
 require 'active_support/core_ext/module/attribute_accessors'
 
 require 'zeitwerk'
-Zeitwerk::Loader.for_gem.setup
+loader = Zeitwerk::Loader.for_gem
+loader.setup
 
 module ActiveSettings
 
