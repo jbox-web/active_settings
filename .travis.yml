@@ -15,3 +15,6 @@ before_script:
   - ./cc-test-reporter before-build
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+matrix:
+  allow_failures:
+    - rvm: ruby-head
