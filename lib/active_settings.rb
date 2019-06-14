@@ -7,7 +7,7 @@ require 'ostruct'
 require 'singleton'
 
 require 'deep_merge'
-require 'dry-validation'
+require 'dry-schema'
 require 'active_support/core_ext/module/attribute_accessors'
 
 require 'zeitwerk'
