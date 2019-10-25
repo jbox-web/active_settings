@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ActiveSettings::Base do
+RSpec.describe ActiveSettings::Base do
 
   context 'when source file is nil' do
     let(:settings) do
