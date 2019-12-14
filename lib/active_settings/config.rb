@@ -31,6 +31,8 @@ module ActiveSettings
           result[k] = v.to_hash
         elsif v.instance_of?(Array)
           result[k] = descend_array(v)
+        elsif v.instance_of?(Proc)
+          result[k] = v.()
         else
           result[k] = v
         end

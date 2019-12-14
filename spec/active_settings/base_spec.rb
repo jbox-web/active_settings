@@ -897,4 +897,66 @@ RSpec.describe ActiveSettings::Base do
       end
     end
   end
+
+  context 'with custom settings' do
+    let(:settings) do
+      Class.new(ActiveSettings::Base) do
+        source    get_fixture_path('settings_with_namespace.yml')
+        namespace 'production'
+
+        def load_storage_config!
+          hash = {}
+          %w[private public].each do |prefix|
+            hash["#{prefix}_documents"] = {}
+            hash["#{prefix}_documents"]['path'] = "/documents/#{prefix}"
+            hash["#{prefix}_documents"]['size'] = -> { "size_of_#{prefix}" }
+          end
+          merge!(hash)
+        end
+
+        def load_settings!
+          super
+          load_storage_config!
+        end
+      end
+    end
+
+    describe '#to_hash' do
+      it 'should return config as hash' do
+        expect(settings.to_hash).to eq({
+          bool: false,
+          foo: 'bar',
+          nested: {
+            foo: 'bar'
+          },
+          private_documents: {
+            path: '/documents/private',
+            size: 'size_of_private'
+          },
+          public_documents: {
+            path: '/documents/public',
+            size: 'size_of_public'
+          },
+          deep: {
+            nested: {
+              warn_threshold: 100,
+              warn_account: 'foo',
+            }
+          },
+          ary: [
+            'foo',
+            'bar'
+          ],
+          ary_of_hash: [
+            { foo: 'bar' },
+            { foo: 'bar' },
+          ],
+          ary_of_ary: [
+            ['foo', 'bar'],
+            ['foo', 'bar'],
+          ]
+        })
+      end
+    end
+  end
 end
