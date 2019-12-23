@@ -92,7 +92,6 @@ module ActiveSettings
 
       h.each do |k, v|
         k = k.to_s if !k.respond_to?(:to_sym) && k.respond_to?(:to_s)
-        s.send(:new_ostruct_member!, k)
 
         if v.is_a?(Hash)
           v = v['type'] == 'hash' ? v['contents'] : __convert(v)
@@ -100,7 +99,13 @@ module ActiveSettings
           v = v.collect { |e| e.instance_of?(Hash) ? __convert(e) : e }
         end
 
-        s.send("#{k}=".to_sym, v)
+        if s.respond_to?(:[]=)
+          s[k] = v
+        else
+          s.new_ostruct_member(k)
+          s.send("#{k}=".to_sym, v)
+        end
+
       end
       s
     end
