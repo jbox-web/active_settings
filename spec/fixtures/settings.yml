@@ -11,7 +11,7 @@ ary:
   - bar
 ary_of_hash:
   - { foo: 'bar' }
-  - { foo: 'bar' }
+  - { baz: 'bar' }
 ary_of_ary:
   - ['foo', 'bar']
-  - ['foo', 'bar']
+  - ['baz', 'bar']

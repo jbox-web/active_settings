@@ -197,11 +197,11 @@ RSpec.describe ActiveSettings::Base do
           ],
           ary_of_hash: [
             ActiveSettings::Config.new(foo: 'bar'),
-            ActiveSettings::Config.new(foo: 'bar'),
+            ActiveSettings::Config.new(baz: 'bar'),
           ],
           ary_of_ary: [
             ['foo', 'bar'],
-            ['foo', 'bar'],
+            ['baz', 'bar'],
           ]
         })
       end
@@ -226,11 +226,11 @@ RSpec.describe ActiveSettings::Base do
           ],
           ary_of_hash: [
             { foo: 'bar' },
-            { foo: 'bar' },
+            { baz: 'bar' },
           ],
           ary_of_ary: [
             ['foo', 'bar'],
-            ['foo', 'bar'],
+            ['baz', 'bar'],
           ]
         })
       end
@@ -238,8 +238,8 @@ RSpec.describe ActiveSettings::Base do
 
     describe '#to_json' do
       it 'should return config as json' do
-        expect(settings.to_json).to eq '{"bool":true,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"foo":"bar"}],"ary_of_ary":[["foo","bar"],["foo","bar"]]}'
-        expect(settings.send(:to_json)).to eq '{"bool":true,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"foo":"bar"}],"ary_of_ary":[["foo","bar"],["foo","bar"]]}'
+        expect(settings.to_json).to eq '{"bool":true,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"baz":"bar"}],"ary_of_ary":[["foo","bar"],["baz","bar"]]}'
+        expect(settings.send(:to_json)).to eq '{"bool":true,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"baz":"bar"}],"ary_of_ary":[["foo","bar"],["baz","bar"]]}'
       end
     end
 
@@ -300,11 +300,11 @@ RSpec.describe ActiveSettings::Base do
           ],
           ary_of_hash: [
             { foo: 'bar' },
-            { foo: 'bar' },
+            { baz: 'bar' },
           ],
           ary_of_ary: [
             ['foo', 'bar'],
-            ['foo', 'bar'],
+            ['baz', 'bar'],
           ]
         })
       end
@@ -328,11 +328,11 @@ RSpec.describe ActiveSettings::Base do
           ],
           ary_of_hash: [
             { foo: 'bar' },
-            { foo: 'bar' },
+            { baz: 'bar' },
           ],
           ary_of_ary: [
             ['foo', 'bar'],
-            ['foo', 'bar'],
+            ['baz', 'bar'],
           ]
         })
       end
@@ -341,7 +341,7 @@ RSpec.describe ActiveSettings::Base do
         before { ActiveSettings.overwrite_arrays = false }
         after  { ActiveSettings.overwrite_arrays = true }
 
-        it 'should merge nested ary' do
+        it 'should merge/extend nested ary' do
           expect(settings.merge!(ary: ['baz']).to_hash).to eq({
             bool: true,
             foo: 'bar',
@@ -360,17 +360,17 @@ RSpec.describe ActiveSettings::Base do
             ],
             ary_of_hash: [
               { foo: 'bar' },
-              { foo: 'bar' },
+              { baz: 'bar' },
             ],
             ary_of_ary: [
               ['foo', 'bar'],
-              ['foo', 'bar'],
+              ['baz', 'bar'],
             ]
           })
         end
 
-        it 'should merge nested ary of hash' do
-          expect(settings.merge!(ary_of_hash: [{ foo: 'bar' }]).to_hash).to eq({
+        it 'should merge/extend nested ary of hash' do
+          expect(settings.merge!(ary_of_hash: [{ foo: 'baz' }]).to_hash).to eq({
             bool: true,
             foo: 'bar',
             nested: {
@@ -387,18 +387,18 @@ RSpec.describe ActiveSettings::Base do
             ],
             ary_of_hash: [
               { foo: 'bar' },
-              { foo: 'bar' },
-              { foo: 'bar' },
+              { baz: 'bar' },
+              { foo: 'baz' },
             ],
             ary_of_ary: [
               ['foo', 'bar'],
-              ['foo', 'bar'],
+              ['baz', 'bar'],
             ]
           })
         end
 
-        it 'should merge nested ary of ary' do
-          expect(settings.merge!(ary_of_ary: [['foo', 'bar']]).to_hash).to eq({
+        it 'should merge/extend nested ary of ary' do
+          expect(settings.merge!(ary_of_ary: [['foo', 'baz']]).to_hash).to eq({
             bool: true,
             foo: 'bar',
             nested: {
@@ -415,12 +415,12 @@ RSpec.describe ActiveSettings::Base do
             ],
             ary_of_hash: [
               { foo: 'bar' },
-              { foo: 'bar' },
+              { baz: 'bar' },
             ],
             ary_of_ary: [
               ['foo', 'bar'],
-              ['foo', 'bar'],
-              ['foo', 'bar'],
+              ['baz', 'bar'],
+              ['foo', 'baz'],
             ]
           })
         end
@@ -430,7 +430,7 @@ RSpec.describe ActiveSettings::Base do
         before { ActiveSettings.overwrite_arrays = true }
         after  { ActiveSettings.overwrite_arrays = false }
 
-        it 'should merge nested ary' do
+        it 'should merge/overwrite nested ary' do
           expect(settings.merge!(ary: ['baz']).to_hash).to eq({
             bool: true,
             foo: 'bar',
@@ -447,16 +447,16 @@ RSpec.describe ActiveSettings::Base do
             ],
             ary_of_hash: [
               { foo: 'bar' },
-              { foo: 'bar' },
+              { baz: 'bar' },
             ],
             ary_of_ary: [
               ['foo', 'bar'],
-              ['foo', 'bar'],
+              ['baz', 'bar'],
             ]
           })
         end
 
-        it 'should merge nested ary of hash' do
+        it 'should merge/overwrite nested ary of hash' do
           expect(settings.merge!(ary_of_hash: [{ foo: 'bar' }]).to_hash).to eq({
             bool: true,
             foo: 'bar',
@@ -477,12 +477,12 @@ RSpec.describe ActiveSettings::Base do
             ],
             ary_of_ary: [
               ['foo', 'bar'],
-              ['foo', 'bar'],
+              ['baz', 'bar'],
             ]
           })
         end
 
-        it 'should merge nested ary of ary' do
+        it 'should merge/overwrite nested ary of ary' do
           expect(settings.merge!(ary_of_ary: [['foo', 'bar']]).to_hash).to eq({
             bool: true,
             foo: 'bar',
@@ -500,7 +500,7 @@ RSpec.describe ActiveSettings::Base do
             ],
             ary_of_hash: [
               { foo: 'bar' },
-              { foo: 'bar' },
+              { baz: 'bar' },
             ],
             ary_of_ary: [
               ['foo', 'bar'],
@@ -592,11 +592,11 @@ RSpec.describe ActiveSettings::Base do
               ],
               ary_of_hash: [
                 { foo: 'bar' },
-                { foo: 'bar' },
+                { baz: 'bar' },
               ],
               ary_of_ary: [
                 ['foo', 'bar'],
-                ['foo', 'bar'],
+                ['baz', 'bar'],
               ]
             })
           end
@@ -631,11 +631,11 @@ RSpec.describe ActiveSettings::Base do
               ],
               ary_of_hash: [
                 { foo: 'bar' },
-                { foo: 'bar' },
+                { baz: 'bar' },
               ],
               ary_of_ary: [
                 ['foo', 'bar'],
-                ['foo', 'bar'],
+                ['baz', 'bar'],
               ]
             })
           end
@@ -672,11 +672,11 @@ RSpec.describe ActiveSettings::Base do
             ],
             ary_of_hash: [
               { foo: 'bar' },
-              { foo: 'bar' },
+              { baz: 'bar' },
             ],
             ary_of_ary: [
               ['foo', 'bar'],
-              ['foo', 'bar'],
+              ['baz', 'bar'],
             ]
           })
         end
@@ -712,11 +712,11 @@ RSpec.describe ActiveSettings::Base do
             ],
             ary_of_hash: [
               { foo: 'bar' },
-              { foo: 'bar' },
+              { baz: 'bar' },
             ],
             ary_of_ary: [
               ['foo', 'bar'],
-              ['foo', 'bar'],
+              ['baz', 'bar'],
             ]
           })
         end
@@ -753,11 +753,11 @@ RSpec.describe ActiveSettings::Base do
             ],
             ary_of_hash: [
               { foo: 'bar' },
-              { foo: 'bar' },
+              { baz: 'bar' },
             ],
             ary_of_ary: [
               ['foo', 'bar'],
-              ['foo', 'bar'],
+              ['baz', 'bar'],
             ]
           })
         end
@@ -793,11 +793,11 @@ RSpec.describe ActiveSettings::Base do
             ],
             ary_of_hash: [
               { foo: 'bar' },
-              { foo: 'bar' },
+              { baz: 'bar' },
             ],
             ary_of_ary: [
               ['foo', 'bar'],
-              ['foo', 'bar'],
+              ['baz', 'bar'],
             ]
           })
         end
@@ -846,11 +846,11 @@ RSpec.describe ActiveSettings::Base do
             ],
             ary_of_hash: [
               { foo: 'bar' },
-              { foo: 'bar' },
+              { baz: 'bar' },
             ],
             ary_of_ary: [
               ['foo', 'bar'],
-              ['foo', 'bar'],
+              ['baz', 'bar'],
             ]
           })
         end
@@ -886,11 +886,11 @@ RSpec.describe ActiveSettings::Base do
             ],
             ary_of_hash: [
               { foo: 'bar' },
-              { foo: 'bar' },
+              { baz: 'bar' },
             ],
             ary_of_ary: [
               ['foo', 'bar'],
-              ['foo', 'bar'],
+              ['baz', 'bar'],
             ]
           })
         end
@@ -949,11 +949,11 @@ RSpec.describe ActiveSettings::Base do
           ],
           ary_of_hash: [
             { foo: 'bar' },
-            { foo: 'bar' },
+            { baz: 'bar' },
           ],
           ary_of_ary: [
             ['foo', 'bar'],
-            ['foo', 'bar'],
+            ['baz', 'bar'],
           ]
         })
       end
