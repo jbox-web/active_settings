@@ -22,8 +22,11 @@ Layout/EmptyLinesAroundBlockBody:
 Layout/EmptyLinesAroundModuleBody:
   Enabled: false
 
-Metrics/LineLength:
+Layout/LineLength:
   Enabled: false
 
 Metrics/MethodLength:
   Max: 12
+
+Layout/HashAlignment:
+  EnforcedColonStyle: table

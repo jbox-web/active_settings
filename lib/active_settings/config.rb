@@ -24,21 +24,24 @@ module ActiveSettings
     end
 
 
+    # rubocop:disable Metrics/MethodLength
     def to_hash
       result = {}
       marshal_dump.each do |k, v|
-        if v.instance_of?(ActiveSettings::Config)
-          result[k] = v.to_hash
-        elsif v.instance_of?(Array)
-          result[k] = descend_array(v)
-        elsif v.instance_of?(Proc)
-          result[k] = v.()
-        else
-          result[k] = v
-        end
+        result[k] =
+          if v.instance_of?(ActiveSettings::Config)
+            v.to_hash
+          elsif v.instance_of?(Array)
+            descend_array(v)
+          elsif v.instance_of?(Proc)
+            v.call
+          else
+            v
+          end
       end
       result
     end
+    # rubocop:enable Metrics/MethodLength
 
 
     def to_json(*args)
@@ -47,16 +50,16 @@ module ActiveSettings
 
 
     def merge!(hash)
-      current = to_hash
-      DeepMerge.deep_merge!(
-        hash.dup,
-        current,
+      options = {
         preserve_unmergeables: false,
         knockout_prefix:       ActiveSettings.knockout_prefix,
         overwrite_arrays:      ActiveSettings.overwrite_arrays,
         merge_nil_values:      ActiveSettings.merge_nil_values,
-        keep_array_duplicates: ActiveSettings.keep_array_duplicates,
-      )
+        keep_array_duplicates: ActiveSettings.keep_array_duplicates
+      }
+
+      current = to_hash
+      DeepMerge.deep_merge!(hash.dup, current, options)
       marshal_load(__convert(current).marshal_dump)
       self
     end
@@ -87,10 +90,11 @@ module ActiveSettings
 
 
     # Recursively converts Hashes to Options (including Hashes inside Arrays)
-    def __convert(h) #:nodoc:
+    # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize
+    def __convert(hash)
       s = ActiveSettings::Config.new
 
-      h.each do |k, v|
+      hash.each do |k, v|
         k = k.to_s if !k.respond_to?(:to_sym) && k.respond_to?(:to_s)
 
         if v.is_a?(Hash)
@@ -109,22 +113,23 @@ module ActiveSettings
       end
       s
     end
+    # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize
 
 
-    BOOLEAN_MAPPING = {
-      'true'  => true,
-      'false' => false,
-    }.freeze
+    BOOLEAN_MAPPING = { 'true' => true, 'false' => false }.freeze
+
 
     # Try to convert boolean string to a correct type
-    def __value(v)
-      BOOLEAN_MAPPING.fetch(v) { auto_type(v) }
+    def __value(val)
+      BOOLEAN_MAPPING.fetch(val) { auto_type(val) }
     end
 
 
-    def auto_type(v)
-      Integer(v) rescue Float(v) rescue v
+    # rubocop:disable Style/RescueModifier
+    def auto_type(val)
+      Integer(val) rescue Float(val) rescue val
     end
+    # rubocop:enable Style/RescueModifier
 
   end
 end
