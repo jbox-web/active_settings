@@ -202,7 +202,8 @@ RSpec.describe ActiveSettings::Base do
           ary_of_ary: [
             ['foo', 'bar'],
             ['baz', 'bar'],
-          ]
+          ],
+          embedded_ruby: 6
         })
       end
     end
@@ -231,15 +232,16 @@ RSpec.describe ActiveSettings::Base do
           ary_of_ary: [
             ['foo', 'bar'],
             ['baz', 'bar'],
-          ]
+          ],
+          embedded_ruby: 6
         })
       end
     end
 
     describe '#to_json' do
       it 'should return config as json' do
-        expect(settings.to_json).to eq '{"bool":true,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"baz":"bar"}],"ary_of_ary":[["foo","bar"],["baz","bar"]]}'
-        expect(settings.send(:to_json)).to eq '{"bool":true,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"baz":"bar"}],"ary_of_ary":[["foo","bar"],["baz","bar"]]}'
+        expect(settings.to_json).to eq '{"bool":true,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"baz":"bar"}],"ary_of_ary":[["foo","bar"],["baz","bar"]],"embedded_ruby":6}'
+        expect(settings.send(:to_json)).to eq '{"bool":true,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"baz":"bar"}],"ary_of_ary":[["foo","bar"],["baz","bar"]],"embedded_ruby":6}'
       end
     end
 
@@ -305,7 +307,8 @@ RSpec.describe ActiveSettings::Base do
           ary_of_ary: [
             ['foo', 'bar'],
             ['baz', 'bar'],
-          ]
+          ],
+          embedded_ruby: 6
         })
       end
 
@@ -333,7 +336,8 @@ RSpec.describe ActiveSettings::Base do
           ary_of_ary: [
             ['foo', 'bar'],
             ['baz', 'bar'],
-          ]
+          ],
+          embedded_ruby: 6
         })
       end
 
@@ -365,7 +369,8 @@ RSpec.describe ActiveSettings::Base do
             ary_of_ary: [
               ['foo', 'bar'],
               ['baz', 'bar'],
-            ]
+            ],
+            embedded_ruby: 6
           })
         end
 
@@ -393,7 +398,8 @@ RSpec.describe ActiveSettings::Base do
             ary_of_ary: [
               ['foo', 'bar'],
               ['baz', 'bar'],
-            ]
+            ],
+            embedded_ruby: 6
           })
         end
 
@@ -421,7 +427,8 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               ['baz', 'bar'],
               ['foo', 'baz'],
-            ]
+            ],
+            embedded_ruby: 6
           })
         end
       end
@@ -452,7 +459,8 @@ RSpec.describe ActiveSettings::Base do
             ary_of_ary: [
               ['foo', 'bar'],
               ['baz', 'bar'],
-            ]
+            ],
+            embedded_ruby: 6
           })
         end
 
@@ -478,7 +486,8 @@ RSpec.describe ActiveSettings::Base do
             ary_of_ary: [
               ['foo', 'bar'],
               ['baz', 'bar'],
-            ]
+            ],
+            embedded_ruby: 6
           })
         end
 
@@ -504,7 +513,8 @@ RSpec.describe ActiveSettings::Base do
             ],
             ary_of_ary: [
               ['foo', 'bar'],
-            ]
+            ],
+            embedded_ruby: 6
           })
         end
       end
@@ -597,7 +607,8 @@ RSpec.describe ActiveSettings::Base do
               ary_of_ary: [
                 ['foo', 'bar'],
                 ['baz', 'bar'],
-              ]
+              ],
+              embedded_ruby: 6
             })
           end
         end
@@ -636,7 +647,8 @@ RSpec.describe ActiveSettings::Base do
               ary_of_ary: [
                 ['foo', 'bar'],
                 ['baz', 'bar'],
-              ]
+              ],
+              embedded_ruby: 6
             })
           end
         end
@@ -677,7 +689,8 @@ RSpec.describe ActiveSettings::Base do
             ary_of_ary: [
               ['foo', 'bar'],
               ['baz', 'bar'],
-            ]
+            ],
+            embedded_ruby: 6
           })
         end
       end
@@ -717,7 +730,8 @@ RSpec.describe ActiveSettings::Base do
             ary_of_ary: [
               ['foo', 'bar'],
               ['baz', 'bar'],
-            ]
+            ],
+            embedded_ruby: 6
           })
         end
       end
@@ -758,7 +772,8 @@ RSpec.describe ActiveSettings::Base do
             ary_of_ary: [
               ['foo', 'bar'],
               ['baz', 'bar'],
-            ]
+            ],
+            embedded_ruby: 6
           })
         end
       end
@@ -798,7 +813,8 @@ RSpec.describe ActiveSettings::Base do
             ary_of_ary: [
               ['foo', 'bar'],
               ['baz', 'bar'],
-            ]
+            ],
+            embedded_ruby: 6
           })
         end
       end
@@ -851,7 +867,8 @@ RSpec.describe ActiveSettings::Base do
             ary_of_ary: [
               ['foo', 'bar'],
               ['baz', 'bar'],
-            ]
+            ],
+            embedded_ruby: 6
           })
         end
       end
@@ -891,7 +908,8 @@ RSpec.describe ActiveSettings::Base do
             ary_of_ary: [
               ['foo', 'bar'],
               ['baz', 'bar'],
-            ]
+            ],
+            embedded_ruby: 6
           })
         end
       end
@@ -954,7 +972,8 @@ RSpec.describe ActiveSettings::Base do
           ary_of_ary: [
             ['foo', 'bar'],
             ['baz', 'bar'],
-          ]
+          ],
+          embedded_ruby: 6
         })
       end
     end

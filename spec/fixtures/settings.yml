@@ -15,3 +15,4 @@ ary_of_hash:
 ary_of_ary:
   - ['foo', 'bar']
   - ['baz', 'bar']
+embedded_ruby: <%= 1 + 2 + 3 %>
