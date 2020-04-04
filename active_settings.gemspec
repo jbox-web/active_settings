@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
 
   s.files = `git ls-files`.split("\n")
 
-  s.add_runtime_dependency 'activesupport', '>= 4.2'
+  s.add_runtime_dependency 'activesupport', '>= 5.1'
   s.add_runtime_dependency 'deep_merge',    '~> 1.2.1'
   s.add_runtime_dependency 'dry-schema',    '>= 1.2.0'
   s.add_runtime_dependency 'zeitwerk'
