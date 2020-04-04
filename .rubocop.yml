@@ -4,7 +4,7 @@ AllCops:
     - bin/*
     - spec/**/*
 
-Documentation:
+Style/Documentation:
   Enabled: false
 
 Layout/EmptyLines:
@@ -30,3 +30,18 @@ Metrics/MethodLength:
 
 Layout/HashAlignment:
   EnforcedColonStyle: table
+
+Lint/RaiseException:
+  Enabled: true
+
+Lint/StructNewOverride:
+  Enabled: true
+
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
