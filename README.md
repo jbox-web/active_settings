@@ -15,7 +15,7 @@ Put this in your `Gemfile` :
 ```ruby
 git_source(:github){ |repo_name| "https://github.com/#{repo_name}.git" }
 
-gem 'active_settings', github: 'jbox-web/active_settings', tag: '1.0.0'
+gem 'active_settings', github: 'jbox-web/active_settings', tag: '1.1.0'
 ```
 
 then run `bundle install`.
