@@ -4,8 +4,8 @@ module ActiveSettings
   class Base < Config
     include Singleton
 
-    extend  Validation::Schema
-    include Validation::Validate
+    extend  ActiveSettings::Validation::Schema
+    include ActiveSettings::Validation::Validate
 
     class << self
 
