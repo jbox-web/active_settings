@@ -11,6 +11,12 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/jbox-web/active_settings'
   s.summary     = 'A gem to manage Settings'
   s.license     = 'MIT'
+  s.metadata    = {
+    'homepage_uri'    => 'https://github.com/jbox-web/active_settings',
+    'changelog_uri'   => 'https://github.com/jbox-web/active_settings/blob/master/CHANGELOG.md',
+    'source_code_uri' => 'https://github.com/jbox-web/active_settings',
+    'bug_tracker_uri' => 'https://github.com/jbox-web/active_settings/issues'
+  }
 
   s.required_ruby_version = '>= 2.5.0'
 
