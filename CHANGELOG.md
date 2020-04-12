@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.2.0 (to come)
+
+* Add support of JRuby
+* Bump required Ruby version to 2.5.0
+* Bump to ActiveSupport 5.1.x
+
 ## 1.1.0 (2020/04/04)
 
 * Add support of Ruby 2.7
