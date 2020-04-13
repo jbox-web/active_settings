@@ -66,8 +66,14 @@ production:
   <<: *defaults
 ```
 
+Keys are both accessible with a string or a symbol.
+
 
 ### 3. Access your settings
+
+You can use different methods to access to values :
+
+* by using method chains :
 
 ```ruby
 >> Rails.env
@@ -86,17 +92,7 @@ production:
 => "Did you know 5 + 5 = 10?"
 ```
 
-You can use these settings anywhere, for example in a model:
-
-```ruby
-class Post < ActiveRecord::Base
-  self.per_page = Settings.pagination.posts_per_page
-end
-```
-
-Other `Enumerable` methods:
-
-* `fetch`
+* by using `fetch` method :
 
 ```ruby
 >> Settings.cool.fetch(:saweet)
@@ -104,37 +100,19 @@ Other `Enumerable` methods:
 
 >> Settings.cool.fetch('saweet')
 => "nested settings"
+```
 
->> Settings.cool.fetch(:foo)
-=> "nil"
+You can provide default value :
 
->> Settings.cool.fetch('foo')
-=> "nil"
-
+```ruby
 >> Settings.cool.fetch(:foo, 'bar')
-=> "bar"
-
->> Settings.cool.fetch('foo', 'bar')
 => "bar"
 
 >> Settings.cool.fetch(:foo) { 'bar' }
 => "bar"
-
->> Settings.cool.fetch('foo') { 'bar' }
-=> "bar"
 ```
 
-* `key?`
-
-```ruby
->> Settings.cool.key?(:saweet)
-=> "true"
-
->> Settings.cool.key?('saweet')
-=> "true"
-```
-
-Access to nested hashes keys:
+* by using `[]` accessor :
 
 ```ruby
 >> Settings[:cool][:saweet]
@@ -144,7 +122,7 @@ Access to nested hashes keys:
 => "nested settings"
 ```
 
-Dig in nested hashes:
+* by using `dig` method :
 
 ```ruby
 >> Settings.dig(:cool, :saweet)
@@ -152,4 +130,22 @@ Dig in nested hashes:
 
 >> Settings.dig('cool', 'saweet')
 => "nested settings"
+```
+
+* by using `key?` method :
+
+```ruby
+>> Settings.cool.key?(:saweet)
+=> "true"
+
+>> Settings.cool.key?('saweet')
+=> "true"
+```
+
+You can use these settings anywhere, for example in a model:
+
+```ruby
+class Post < ActiveRecord::Base
+  self.per_page = Settings.pagination.posts_per_page
+end
 ```
