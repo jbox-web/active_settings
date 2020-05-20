@@ -65,7 +65,7 @@ module ActiveSettings
 
     # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
     def reload_env!
-      return self if ENV.nil? || ENV.empty?
+      return if ENV.nil? || ENV.empty?
 
       hash = {}
 

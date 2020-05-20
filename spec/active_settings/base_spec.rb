@@ -735,6 +735,47 @@ RSpec.describe ActiveSettings::Base do
           })
         end
       end
+
+      context 'when ENV is empty' do
+        before do
+          ActiveSettings.use_env = true
+          @old_env = ENV.to_hash
+          ENV.clear
+        end
+
+        after do
+          ActiveSettings.use_env = false
+          ENV = @old_env
+        end
+
+        it 'should load settings from env vars' do
+          expect(settings.to_hash).to eq({
+            bool: true,
+            foo: 'bar',
+            nested: {
+              foo: 'bar',
+            },
+            deep: {
+              nested: {
+                warn_threshold: 100,
+              }
+            },
+            ary: [
+              'foo',
+              'bar'
+            ],
+            ary_of_hash: [
+              { foo: 'bar' },
+              { baz: 'bar' },
+            ],
+            ary_of_ary: [
+              ['foo', 'bar'],
+              ['baz', 'bar'],
+            ],
+            embedded_ruby: 6
+          })
+        end
+      end
     end
   end
 
