@@ -745,7 +745,7 @@ RSpec.describe ActiveSettings::Base do
 
         after do
           ActiveSettings.use_env = false
-          ENV = @old_env
+          ENV.update(@old_env)
         end
 
         it 'should load settings from env vars' do
