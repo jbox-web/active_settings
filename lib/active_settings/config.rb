@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Borrowed from [config gem](https://github.com/rubyconfig/config)
+# See: https://github.com/rubyconfig/config/blob/master/lib/config/options.rb
+
 module ActiveSettings
   class Config < OpenStruct
 

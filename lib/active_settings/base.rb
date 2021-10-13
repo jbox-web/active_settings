@@ -63,6 +63,8 @@ module ActiveSettings
     end
 
 
+    # Borrowed from [config gem](https://github.com/rubyconfig/config/blob/master/lib/config/options.rb)
+    # See: https://github.com/rubyconfig/config/commit/351c819f75d53aa5621a226b5957c79ac82ded11
     # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
     def reload_env!
       return if ENV.nil? || ENV.empty?

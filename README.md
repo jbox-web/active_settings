@@ -8,6 +8,10 @@
 
 Settings in Rails.
 
+It's heavily based on [config](https://github.com/rubyconfig/config) gem.
+
+I made my own because I don't like the idea of having a [ghost class globally accessible](https://github.com/rubyconfig/config#accessing-the-settings-object) (What if I want to add some convenient methods on `Settings`?).
+
 ## Installation
 
 Put this in your `Gemfile` :
@@ -35,7 +39,7 @@ class Settings < ActiveSettings::Base
 end
 ```
 
-Name it Settings, name it Config, name it whatever you want. Add as many or as few as you like. A good place to put
+Name it `Settings`, name it `Config`, name it whatever you want. Add as many or as few as you like. A good place to put
 this file in a Rails app is `config/settings.rb`
 
 
