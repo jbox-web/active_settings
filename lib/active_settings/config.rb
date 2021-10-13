@@ -26,20 +26,7 @@ module ActiveSettings
 
     # rubocop:disable Metrics/MethodLength
     def to_hash
-      result = {}
-      each do |k, v|
-        result[k] =
-          if v.instance_of?(ActiveSettings::Config)
-            v.to_hash
-          elsif v.instance_of?(Array)
-            traverse_array(v)
-          elsif v.instance_of?(Proc)
-            v.call
-          else
-            v
-          end
-      end
-      result
+      traverse_self
     end
     # rubocop:enable Metrics/MethodLength
 
@@ -73,6 +60,24 @@ module ActiveSettings
         raise KeyError, "key not found: #{method_name.inspect}" unless key?(method_name)
       end
       super
+    end
+
+
+    def traverse_self
+      result = {}
+      each do |k, v|
+        result[k] =
+          if v.instance_of?(ActiveSettings::Config)
+            v.to_hash
+          elsif v.instance_of?(Array)
+            traverse_array(v)
+          elsif v.instance_of?(Proc)
+            v.call
+          else
+            v
+          end
+      end
+      result
     end
 
 
