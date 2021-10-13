@@ -67,12 +67,14 @@ module ActiveSettings
     def reload_env!
       return if ENV.nil? || ENV.empty?
 
+      raise ActiveSettings::Error::EnvPrefixNotDefinedError if ActiveSettings.env_prefix.nil?
+
+      separator = ActiveSettings.env_separator
+      prefix = ActiveSettings.env_prefix.to_s.split(separator)
+
       hash = {}
 
       ENV.each do |variable, value|
-        separator = ActiveSettings.env_separator
-        prefix = (ActiveSettings.env_prefix || ActiveSettings.const_name).to_s.split(separator)
-
         keys = variable.to_s.split(separator)
 
         next if keys.shift(prefix.size) != prefix

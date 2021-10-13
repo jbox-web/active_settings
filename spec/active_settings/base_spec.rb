@@ -893,6 +893,24 @@ RSpec.describe ActiveSettings::Base do
           })
         end
       end
+
+      context 'when env_prefix is nil' do
+        before do
+          ActiveSettings.use_env = true
+          ActiveSettings.env_prefix = nil
+        end
+
+        after do
+          ActiveSettings.use_env = false
+          ActiveSettings.env_prefix = 'SETTINGS'
+        end
+
+        it 'should raise error' do
+          expect {
+            settings.to_hash
+          }.to raise_error(ActiveSettings::Error::EnvPrefixNotDefinedError)
+        end
+      end
     end
   end
 
