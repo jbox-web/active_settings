@@ -90,6 +90,8 @@ module ActiveSettings
           value.to_hash
         elsif value.instance_of?(Array)
           traverse_array(value)
+        elsif value.instance_of?(Proc)
+          value.call
         else
           value
         end
