@@ -373,6 +373,113 @@ RSpec.describe ActiveSettings::Base do
         })
       end
 
+      context 'when overwrite_arrays is true (default)' do
+        it 'should merge/overwrite nested ary' do
+          expect(settings.merge!(ary: ['baz']).to_hash).to eq({
+            bool_true: true,
+            bool_false: false,
+            string: 'foo',
+            integer: 1,
+            float: 1.0,
+            foo: 'bar',
+            nested: {
+              foo: 'bar',
+            },
+            deep: {
+              nested: {
+                warn_threshold: 100,
+              }
+            },
+            ary: [
+              'baz',
+            ],
+            ary_of_hash: [
+              { foo: 'bar' },
+              { baz: 'bar' },
+            ],
+            ary_of_ary: [
+              ['foo', 'bar'],
+              ['baz', 'bar'],
+            ],
+            ary_of_mix: [
+              ['foo', 'bar'],
+              { foo: 'bar' },
+            ],
+            embedded_ruby: 6
+          })
+        end
+
+        it 'should merge/overwrite nested ary of hash' do
+          expect(settings.merge!(ary_of_hash: [{ foo: 'bar' }]).to_hash).to eq({
+            bool_true: true,
+            bool_false: false,
+            string: 'foo',
+            integer: 1,
+            float: 1.0,
+            foo: 'bar',
+            nested: {
+              foo: 'bar',
+            },
+            deep: {
+              nested: {
+                warn_threshold: 100,
+              }
+            },
+            ary: [
+              'foo',
+              'bar',
+            ],
+            ary_of_hash: [
+              { foo: 'bar' },
+            ],
+            ary_of_ary: [
+              ['foo', 'bar'],
+              ['baz', 'bar'],
+            ],
+            ary_of_mix: [
+              ['foo', 'bar'],
+              { foo: 'bar' },
+            ],
+            embedded_ruby: 6
+          })
+        end
+
+        it 'should merge/overwrite nested ary of ary' do
+          expect(settings.merge!(ary_of_ary: [['foo', 'bar']]).to_hash).to eq({
+            bool_true: true,
+            bool_false: false,
+            string: 'foo',
+            integer: 1,
+            float: 1.0,
+            foo: 'bar',
+            nested: {
+              foo: 'bar',
+            },
+            deep: {
+              nested: {
+                warn_threshold: 100,
+              }
+            },
+            ary: [
+              'foo',
+              'bar',
+            ],
+            ary_of_hash: [
+              { foo: 'bar' },
+              { baz: 'bar' },
+            ],
+            ary_of_ary: [
+              ['foo', 'bar'],
+            ],
+            ary_of_mix: [
+              ['foo', 'bar'],
+              { foo: 'bar' },
+            ],
+            embedded_ruby: 6
+          })
+        end
+      end
+
       context 'when overwrite_arrays is false' do
         before { ActiveSettings.overwrite_arrays = false }
         after  { ActiveSettings.overwrite_arrays = true }
@@ -479,116 +586,6 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               ['baz', 'bar'],
               ['foo', 'baz'],
-            ],
-            ary_of_mix: [
-              ['foo', 'bar'],
-              { foo: 'bar' },
-            ],
-            embedded_ruby: 6
-          })
-        end
-      end
-
-      context 'when overwrite_arrays is true' do
-        before { ActiveSettings.overwrite_arrays = true }
-        after  { ActiveSettings.overwrite_arrays = false }
-
-        it 'should merge/overwrite nested ary' do
-          expect(settings.merge!(ary: ['baz']).to_hash).to eq({
-            bool_true: true,
-            bool_false: false,
-            string: 'foo',
-            integer: 1,
-            float: 1.0,
-            foo: 'bar',
-            nested: {
-              foo: 'bar',
-            },
-            deep: {
-              nested: {
-                warn_threshold: 100,
-              }
-            },
-            ary: [
-              'baz',
-            ],
-            ary_of_hash: [
-              { foo: 'bar' },
-              { baz: 'bar' },
-            ],
-            ary_of_ary: [
-              ['foo', 'bar'],
-              ['baz', 'bar'],
-            ],
-            ary_of_mix: [
-              ['foo', 'bar'],
-              { foo: 'bar' },
-            ],
-            embedded_ruby: 6
-          })
-        end
-
-        it 'should merge/overwrite nested ary of hash' do
-          expect(settings.merge!(ary_of_hash: [{ foo: 'bar' }]).to_hash).to eq({
-            bool_true: true,
-            bool_false: false,
-            string: 'foo',
-            integer: 1,
-            float: 1.0,
-            foo: 'bar',
-            nested: {
-              foo: 'bar',
-            },
-            deep: {
-              nested: {
-                warn_threshold: 100,
-              }
-            },
-            ary: [
-              'foo',
-              'bar',
-            ],
-            ary_of_hash: [
-              { foo: 'bar' },
-            ],
-            ary_of_ary: [
-              ['foo', 'bar'],
-              ['baz', 'bar'],
-            ],
-            ary_of_mix: [
-              ['foo', 'bar'],
-              { foo: 'bar' },
-            ],
-            embedded_ruby: 6
-          })
-        end
-
-        it 'should merge/overwrite nested ary of ary' do
-          expect(settings.merge!(ary_of_ary: [['foo', 'bar']]).to_hash).to eq({
-            bool_true: true,
-            bool_false: false,
-            string: 'foo',
-            integer: 1,
-            float: 1.0,
-            foo: 'bar',
-            nested: {
-              foo: 'bar',
-            },
-            deep: {
-              nested: {
-                warn_threshold: 100,
-              }
-            },
-            ary: [
-              'foo',
-              'bar',
-            ],
-            ary_of_hash: [
-              { foo: 'bar' },
-              { baz: 'bar' },
-            ],
-            ary_of_ary: [
-              ['foo', 'bar'],
             ],
             ary_of_mix: [
               ['foo', 'bar'],
@@ -1115,6 +1112,11 @@ RSpec.describe ActiveSettings::Base do
         source    get_fixture_path('settings_with_namespace.yml')
         namespace 'production'
 
+        def load_settings!
+          super
+          load_storage_config!
+        end
+
         def load_storage_config!
           hash = {}
           %w[private public].each do |prefix|
@@ -1124,11 +1126,6 @@ RSpec.describe ActiveSettings::Base do
             hash["#{prefix}_documents"]['test'] = [-> { "lambda2" }, -> { "lambda1" }]
           end
           merge!(hash)
-        end
-
-        def load_settings!
-          super
-          load_storage_config!
         end
       end
     end
