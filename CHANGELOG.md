@@ -2,9 +2,10 @@
 
 ## 1.2.0 (to come)
 
+* Add support of Ruby 3.0
 * Add support of JRuby
-* Bump required Ruby version to 2.5.0
-* Bump to ActiveSupport 5.1.x
+* Bump required Ruby version to 2.6.0
+* Bump to ActiveSupport 5.2.x
 
 ## 1.1.0 (2020/04/04)
 
