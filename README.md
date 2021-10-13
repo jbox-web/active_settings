@@ -10,7 +10,7 @@ Settings in Rails.
 
 It's heavily based on [config](https://github.com/rubyconfig/config) gem.
 
-I made my own because I don't like the idea of having a [ghost class globally accessible](https://github.com/rubyconfig/config#accessing-the-settings-object) (What if I want to add some convenient methods on `Settings`?).
+I made my own because I don't like the idea of having a [ghost class globally accessible](https://github.com/rubyconfig/config#accessing-the-settings-object) that I can't modify (What if I want to add some convenient methods on `Settings`?).
 
 ## Installation
 
@@ -29,7 +29,7 @@ then run `bundle install`.
 
 ### 1. Define your class
 
-Instead of defining a Settings constant for you, that task is left to you. Simply create a class in your application
+Instead of defining a `Settings` constant for you, that task is left to you. Simply create a class in your application
 that looks like:
 
 ```ruby
