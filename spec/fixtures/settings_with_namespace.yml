@@ -1,7 +1,11 @@
 ---
 # Global config
 default: &default
-  bool: true
+  bool_true: true
+  bool_false: false
+  string: foo
+  integer: 1
+  float: 1.0
   foo: bar
   nested:
     foo: bar
@@ -18,6 +22,9 @@ default: &default
   ary_of_ary:
     - ['foo', 'bar']
     - ['baz', 'bar']
+  ary_of_mix:
+    - ['foo', 'bar']
+    - { foo: 'bar' }
   embedded_ruby: <%= 1 + 2 + 3 %>
 
 # Development config
@@ -31,4 +38,4 @@ development:
 
 production:
   <<: *default
-  bool: false
+  bool_true: false

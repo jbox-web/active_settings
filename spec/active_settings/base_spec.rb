@@ -187,7 +187,11 @@ RSpec.describe ActiveSettings::Base do
     describe '#each' do
       it 'should iterate on Settings' do
         expect(settings.each.to_h).to eq({
-          bool: true,
+          bool_true: true,
+          bool_false: false,
+          string: 'foo',
+          integer: 1,
+          float: 1.0,
           foo: 'bar',
           nested: ActiveSettings::Config.new(foo: 'bar'),
           deep: ActiveSettings::Config.new(nested: ActiveSettings::Config.new(warn_threshold: 100)),
@@ -203,6 +207,10 @@ RSpec.describe ActiveSettings::Base do
             ['foo', 'bar'],
             ['baz', 'bar'],
           ],
+          ary_of_mix: [
+            ['foo', 'bar'],
+            ActiveSettings::Config.new(foo: 'bar'),
+          ],
           embedded_ruby: 6
         })
       end
@@ -211,7 +219,11 @@ RSpec.describe ActiveSettings::Base do
     describe '#to_hash' do
       it 'should return config as hash' do
         expect(settings.to_hash).to eq({
-          bool: true,
+          bool_true: true,
+          bool_false: false,
+          string: 'foo',
+          integer: 1,
+          float: 1.0,
           foo: 'bar',
           nested: {
             foo: 'bar'
@@ -233,6 +245,10 @@ RSpec.describe ActiveSettings::Base do
             ['foo', 'bar'],
             ['baz', 'bar'],
           ],
+          ary_of_mix: [
+            ['foo', 'bar'],
+            { foo: 'bar' },
+          ],
           embedded_ruby: 6
         })
       end
@@ -240,8 +256,8 @@ RSpec.describe ActiveSettings::Base do
 
     describe '#to_json' do
       it 'should return config as json' do
-        expect(settings.to_json).to eq '{"bool":true,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"baz":"bar"}],"ary_of_ary":[["foo","bar"],["baz","bar"]],"embedded_ruby":6}'
-        expect(settings.send(:to_json)).to eq '{"bool":true,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"baz":"bar"}],"ary_of_ary":[["foo","bar"],["baz","bar"]],"embedded_ruby":6}'
+        expect(settings.to_json).to eq '{"bool_true":true,"bool_false":false,"string":"foo","integer":1,"float":1.0,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"baz":"bar"}],"ary_of_ary":[["foo","bar"],["baz","bar"]],"ary_of_mix":[["foo","bar"],{"foo":"bar"}],"embedded_ruby":6}'
+        expect(settings.send(:to_json)).to eq '{"bool_true":true,"bool_false":false,"string":"foo","integer":1,"float":1.0,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"baz":"bar"}],"ary_of_ary":[["foo","bar"],["baz","bar"]],"ary_of_mix":[["foo","bar"],{"foo":"bar"}],"embedded_ruby":6}'
       end
     end
 
@@ -285,7 +301,11 @@ RSpec.describe ActiveSettings::Base do
     describe '#merge' do
       it 'should merge hash' do
         expect(settings.merge!(baz: 'bar').to_hash).to eq({
-          bool: true,
+          bool_true: true,
+          bool_false: false,
+          string: 'foo',
+          integer: 1,
+          float: 1.0,
           foo: 'bar',
           baz: 'bar',
           nested: {
@@ -308,13 +328,21 @@ RSpec.describe ActiveSettings::Base do
             ['foo', 'bar'],
             ['baz', 'bar'],
           ],
+          ary_of_mix: [
+            ['foo', 'bar'],
+            { foo: 'bar' },
+          ],
           embedded_ruby: 6
         })
       end
 
       it 'should merge nested hash' do
         expect(settings.merge!(nested: { baz: 'bar' }).to_hash).to eq({
-          bool: true,
+          bool_true: true,
+          bool_false: false,
+          string: 'foo',
+          integer: 1,
+          float: 1.0,
           foo: 'bar',
           nested: {
             foo: 'bar',
@@ -337,6 +365,10 @@ RSpec.describe ActiveSettings::Base do
             ['foo', 'bar'],
             ['baz', 'bar'],
           ],
+          ary_of_mix: [
+            ['foo', 'bar'],
+            { foo: 'bar' },
+          ],
           embedded_ruby: 6
         })
       end
@@ -347,7 +379,11 @@ RSpec.describe ActiveSettings::Base do
 
         it 'should merge/extend nested ary' do
           expect(settings.merge!(ary: ['baz']).to_hash).to eq({
-            bool: true,
+            bool_true: true,
+            bool_false: false,
+            string: 'foo',
+            integer: 1,
+            float: 1.0,
             foo: 'bar',
             nested: {
               foo: 'bar',
@@ -370,13 +406,21 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               ['baz', 'bar'],
             ],
+            ary_of_mix: [
+              ['foo', 'bar'],
+              { foo: 'bar' },
+            ],
             embedded_ruby: 6
           })
         end
 
         it 'should merge/extend nested ary of hash' do
           expect(settings.merge!(ary_of_hash: [{ foo: 'baz' }]).to_hash).to eq({
-            bool: true,
+            bool_true: true,
+            bool_false: false,
+            string: 'foo',
+            integer: 1,
+            float: 1.0,
             foo: 'bar',
             nested: {
               foo: 'bar',
@@ -399,13 +443,21 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               ['baz', 'bar'],
             ],
+            ary_of_mix: [
+              ['foo', 'bar'],
+              { foo: 'bar' },
+            ],
             embedded_ruby: 6
           })
         end
 
         it 'should merge/extend nested ary of ary' do
           expect(settings.merge!(ary_of_ary: [['foo', 'baz']]).to_hash).to eq({
-            bool: true,
+            bool_true: true,
+            bool_false: false,
+            string: 'foo',
+            integer: 1,
+            float: 1.0,
             foo: 'bar',
             nested: {
               foo: 'bar',
@@ -428,6 +480,10 @@ RSpec.describe ActiveSettings::Base do
               ['baz', 'bar'],
               ['foo', 'baz'],
             ],
+            ary_of_mix: [
+              ['foo', 'bar'],
+              { foo: 'bar' },
+            ],
             embedded_ruby: 6
           })
         end
@@ -439,7 +495,11 @@ RSpec.describe ActiveSettings::Base do
 
         it 'should merge/overwrite nested ary' do
           expect(settings.merge!(ary: ['baz']).to_hash).to eq({
-            bool: true,
+            bool_true: true,
+            bool_false: false,
+            string: 'foo',
+            integer: 1,
+            float: 1.0,
             foo: 'bar',
             nested: {
               foo: 'bar',
@@ -460,13 +520,21 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               ['baz', 'bar'],
             ],
+            ary_of_mix: [
+              ['foo', 'bar'],
+              { foo: 'bar' },
+            ],
             embedded_ruby: 6
           })
         end
 
         it 'should merge/overwrite nested ary of hash' do
           expect(settings.merge!(ary_of_hash: [{ foo: 'bar' }]).to_hash).to eq({
-            bool: true,
+            bool_true: true,
+            bool_false: false,
+            string: 'foo',
+            integer: 1,
+            float: 1.0,
             foo: 'bar',
             nested: {
               foo: 'bar',
@@ -487,13 +555,21 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               ['baz', 'bar'],
             ],
+            ary_of_mix: [
+              ['foo', 'bar'],
+              { foo: 'bar' },
+            ],
             embedded_ruby: 6
           })
         end
 
         it 'should merge/overwrite nested ary of ary' do
           expect(settings.merge!(ary_of_ary: [['foo', 'bar']]).to_hash).to eq({
-            bool: true,
+            bool_true: true,
+            bool_false: false,
+            string: 'foo',
+            integer: 1,
+            float: 1.0,
             foo: 'bar',
             nested: {
               foo: 'bar',
@@ -513,6 +589,10 @@ RSpec.describe ActiveSettings::Base do
             ],
             ary_of_ary: [
               ['foo', 'bar'],
+            ],
+            ary_of_mix: [
+              ['foo', 'bar'],
+              { foo: 'bar' },
             ],
             embedded_ruby: 6
           })
@@ -576,17 +656,21 @@ RSpec.describe ActiveSettings::Base do
         context 'when boolean is false' do
           before do
             ActiveSettings.use_env = true
-            ENV['SETTINGS.BOOL'] = 'false'
+            ENV['SETTINGS.BOOL_TRUE'] = 'false'
           end
 
           after do
             ActiveSettings.use_env = false
-            ENV.delete('SETTINGS.BOOL')
+            ENV.delete('SETTINGS.BOOL_TRUE')
           end
 
           it 'should load settings from env vars' do
             expect(settings.to_hash).to eq({
-              bool: false,
+              bool_true: false,
+              bool_false: false,
+              string: 'foo',
+              integer: 1,
+              float: 1.0,
               foo: 'bar',
               nested: {
                 foo: 'bar',
@@ -607,6 +691,10 @@ RSpec.describe ActiveSettings::Base do
               ary_of_ary: [
                 ['foo', 'bar'],
                 ['baz', 'bar'],
+              ],
+              ary_of_mix: [
+                ['foo', 'bar'],
+                { foo: 'bar' },
               ],
               embedded_ruby: 6
             })
@@ -616,17 +704,21 @@ RSpec.describe ActiveSettings::Base do
         context 'when boolean is true' do
           before do
             ActiveSettings.use_env = true
-            ENV['SETTINGS.BOOL'] = 'true'
+            ENV['SETTINGS.BOOL_TRUE'] = 'true'
           end
 
           after do
             ActiveSettings.use_env = false
-            ENV.delete('SETTINGS.BOOL')
+            ENV.delete('SETTINGS.BOOL_TRUE')
           end
 
           it 'should load settings from env vars' do
             expect(settings.to_hash).to eq({
-              bool: true,
+              bool_true: true,
+              bool_false: false,
+              string: 'foo',
+              integer: 1,
+              float: 1.0,
               foo: 'bar',
               nested: {
                 foo: 'bar',
@@ -647,6 +739,10 @@ RSpec.describe ActiveSettings::Base do
               ary_of_ary: [
                 ['foo', 'bar'],
                 ['baz', 'bar'],
+              ],
+              ary_of_mix: [
+                ['foo', 'bar'],
+                { foo: 'bar' },
               ],
               embedded_ruby: 6
             })
@@ -667,7 +763,11 @@ RSpec.describe ActiveSettings::Base do
 
         it 'should load settings from env vars' do
           expect(settings.to_hash).to eq({
-            bool: true,
+            bool_true: true,
+            bool_false: false,
+            string: 'foo',
+            integer: 1,
+            float: 1.0,
             foo: 'bar',
             nested: {
               foo: 'bar',
@@ -690,6 +790,10 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               ['baz', 'bar'],
             ],
+            ary_of_mix: [
+              ['foo', 'bar'],
+              { foo: 'bar' },
+            ],
             embedded_ruby: 6
           })
         end
@@ -708,7 +812,11 @@ RSpec.describe ActiveSettings::Base do
 
         it 'should load settings from env vars' do
           expect(settings.to_hash).to eq({
-            bool: true,
+            bool_true: true,
+            bool_false: false,
+            string: 'foo',
+            integer: 1,
+            float: 1.0,
             foo: 'bar',
             nested: {
               foo: 'bar',
@@ -731,6 +839,10 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               ['baz', 'bar'],
             ],
+            ary_of_mix: [
+              ['foo', 'bar'],
+              { foo: 'bar' },
+            ],
             embedded_ruby: 6
           })
         end
@@ -750,7 +862,11 @@ RSpec.describe ActiveSettings::Base do
 
         it 'should load settings from env vars' do
           expect(settings.to_hash).to eq({
-            bool: true,
+            bool_true: true,
+            bool_false: false,
+            string: 'foo',
+            integer: 1,
+            float: 1.0,
             foo: 'bar',
             nested: {
               foo: 'bar',
@@ -772,6 +888,10 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               ['baz', 'bar'],
             ],
+            ary_of_mix: [
+              ['foo', 'bar'],
+              { foo: 'bar' },
+            ],
             embedded_ruby: 6
           })
         end
@@ -791,7 +911,11 @@ RSpec.describe ActiveSettings::Base do
       describe '#to_hash' do
         it 'should return config as hash' do
           expect(settings.to_hash).to eq({
-            bool: true,
+            bool_true: true,
+            bool_false: false,
+            string: 'foo',
+            integer: 1,
+            float: 1.0,
             foo: 'baz',
             nested: {
               foo: 'bar'
@@ -814,6 +938,10 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               ['baz', 'bar'],
             ],
+            ary_of_mix: [
+              ['foo', 'bar'],
+              { foo: 'bar' },
+            ],
             embedded_ruby: 6
           })
         end
@@ -832,7 +960,11 @@ RSpec.describe ActiveSettings::Base do
 
         it 'should load settings from env vars' do
           expect(settings.to_hash).to eq({
-            bool: true,
+            bool_true: true,
+            bool_false: false,
+            string: 'foo',
+            integer: 1,
+            float: 1.0,
             foo: 'baz',
             nested: {
               foo: 'bar',
@@ -854,6 +986,10 @@ RSpec.describe ActiveSettings::Base do
             ary_of_ary: [
               ['foo', 'bar'],
               ['baz', 'bar'],
+            ],
+            ary_of_mix: [
+              ['foo', 'bar'],
+              { foo: 'bar' },
             ],
             embedded_ruby: 6
           })
@@ -886,7 +1022,11 @@ RSpec.describe ActiveSettings::Base do
       describe '#to_hash' do
         it 'should return config as hash' do
           expect(settings.to_hash).to eq({
-            bool: false,
+            bool_true: false,
+            bool_false: false,
+            string: 'foo',
+            integer: 1,
+            float: 1.0,
             foo: 'bar',
             nested: {
               foo: 'bar'
@@ -909,6 +1049,10 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               ['baz', 'bar'],
             ],
+            ary_of_mix: [
+              ['foo', 'bar'],
+              { foo: 'bar' },
+            ],
             embedded_ruby: 6
           })
         end
@@ -927,7 +1071,11 @@ RSpec.describe ActiveSettings::Base do
 
         it 'should load settings from env vars' do
           expect(settings.to_hash).to eq({
-            bool: false,
+            bool_true: false,
+            bool_false: false,
+            string: 'foo',
+            integer: 1,
+            float: 1.0,
             foo: 'bar',
             nested: {
               foo: 'bar',
@@ -949,6 +1097,10 @@ RSpec.describe ActiveSettings::Base do
             ary_of_ary: [
               ['foo', 'bar'],
               ['baz', 'bar'],
+            ],
+            ary_of_mix: [
+              ['foo', 'bar'],
+              { foo: 'bar' },
             ],
             embedded_ruby: 6
           })
@@ -983,7 +1135,11 @@ RSpec.describe ActiveSettings::Base do
     describe '#to_hash' do
       it 'should return config as hash' do
         expect(settings.to_hash).to eq({
-          bool: false,
+          bool_true: false,
+          bool_false: false,
+          string: 'foo',
+          integer: 1,
+          float: 1.0,
           foo: 'bar',
           nested: {
             foo: 'bar'
@@ -1013,6 +1169,10 @@ RSpec.describe ActiveSettings::Base do
           ary_of_ary: [
             ['foo', 'bar'],
             ['baz', 'bar'],
+          ],
+          ary_of_mix: [
+            ['foo', 'bar'],
+            { foo: 'bar' },
           ],
           embedded_ruby: 6
         })
