@@ -27,11 +27,9 @@ module ActiveSettings
     end
 
 
-    # rubocop:disable Metrics/MethodLength
     def to_hash
       traverse_self
     end
-    # rubocop:enable Metrics/MethodLength
 
 
     def to_json(*args)
@@ -63,9 +61,15 @@ module ActiveSettings
     end
 
 
+    def respond_to_missing?(*args)
+      super
+    end
+
+
     private
 
 
+    # rubocop:disable Metrics/MethodLength
     def traverse_self
       result = {}
       each do |k, v|
@@ -82,6 +86,7 @@ module ActiveSettings
       end
       result
     end
+    # rubocop:enable Metrics/MethodLength
 
 
     def traverse_array(array)
@@ -104,20 +109,24 @@ module ActiveSettings
     def __convert(hash)
       s = ActiveSettings::Config.new
 
-      hash.each do |k, v|
-        k = k.to_s if !k.respond_to?(:to_sym) && k.respond_to?(:to_s)
+      hash.each do |key, value|
+        key = key.to_s if !key.respond_to?(:to_sym) && key.respond_to?(:to_s)
 
-        if v.is_a?(Hash)
-          v = v['type'] == 'hash' ? v['contents'] : __convert(v)
-        elsif v.is_a?(Array)
-          v = v.collect { |e| e.instance_of?(Hash) ? __convert(e) : e }
-        end
+        new_val =
+          case value
+          when Hash
+            value['type'] == 'hash' ? value['contents'] : __convert(value)
+          when Array
+            value.collect { |e| e.instance_of?(Hash) ? __convert(e) : e }
+          else
+            value
+          end
 
         if s.respond_to?(:[]=)
-          s[k] = v
+          s[key] = new_val
         else
-          s.new_ostruct_member(k)
-          s.send("#{k}=".to_sym, v)
+          s.new_ostruct_member(key)
+          s.send("#{key}=".to_sym, new_val)
         end
 
       end
@@ -127,6 +136,7 @@ module ActiveSettings
 
 
     BOOLEAN_MAPPING = { 'true' => true, 'false' => false }.freeze
+    private_constant :BOOLEAN_MAPPING
 
 
     # Try to convert boolean string to a correct type

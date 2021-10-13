@@ -23,11 +23,9 @@ module ActiveSettings
 
       private
 
-      # rubocop:disable Style/MethodMissingSuper
       def method_missing(name, *args, &block)
         instance.send(name, *args, &block)
       end
-      # rubocop:enable Style/MethodMissingSuper
 
     end
 
@@ -53,7 +51,7 @@ module ActiveSettings
 
     # rubocop:disable Security/YAMLLoad
     def load_yaml_file(file)
-      YAML.load(ERB.new(IO.read(file)).result).to_hash
+      YAML.load(ERB.new(File.read(file)).result).to_hash
     end
     # rubocop:enable Security/YAMLLoad
 
