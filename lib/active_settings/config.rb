@@ -55,15 +55,15 @@ module ActiveSettings
     end
 
 
-    private
-
-
     def method_missing(method_name, *args)
       if ActiveSettings.fail_on_missing && method_name !~ /.*(?==\z)/m
         raise KeyError, "key not found: #{method_name.inspect}" unless key?(method_name)
       end
       super
     end
+
+
+    private
 
 
     def traverse_self
