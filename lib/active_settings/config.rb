@@ -122,13 +122,7 @@ module ActiveSettings
             value
           end
 
-        if s.respond_to?(:[]=)
-          s[key] = new_val
-        else
-          s.new_ostruct_member(key)
-          s.send("#{key}=".to_sym, new_val)
-        end
-
+        s[key] = new_val
       end
       s
     end
