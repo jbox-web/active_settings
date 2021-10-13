@@ -27,7 +27,7 @@ module ActiveSettings
     # rubocop:disable Metrics/MethodLength
     def to_hash
       result = {}
-      marshal_dump.each do |k, v|
+      each do |k, v|
         result[k] =
           if v.instance_of?(ActiveSettings::Config)
             v.to_hash
