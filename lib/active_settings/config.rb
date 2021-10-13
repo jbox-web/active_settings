@@ -32,7 +32,7 @@ module ActiveSettings
           if v.instance_of?(ActiveSettings::Config)
             v.to_hash
           elsif v.instance_of?(Array)
-            descend_array(v)
+            traverse_array(v)
           elsif v.instance_of?(Proc)
             v.call
           else
@@ -76,12 +76,12 @@ module ActiveSettings
     end
 
 
-    def descend_array(array)
+    def traverse_array(array)
       array.map do |value|
         if value.instance_of?(ActiveSettings::Config)
           value.to_hash
         elsif value.instance_of?(Array)
-          descend_array(value)
+          traverse_array(value)
         else
           value
         end
