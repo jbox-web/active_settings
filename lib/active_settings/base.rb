@@ -30,11 +30,11 @@ module ActiveSettings
     end
 
 
-    def initialize(file = self.class.source)
+    def initialize(file = self.class.source, namespace = self.class.namespace)
       raise ActiveSettings::Error::SourceFileNotDefinedError if file.nil?
 
       config = load_config_file(file)
-      config = config[self.class.namespace] if self.class.namespace
+      config = config[namespace] if namespace
       super(config)
 
       load_settings!
