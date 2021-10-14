@@ -22,6 +22,25 @@ RSpec.describe ActiveSettings::Base do
       end
     end
 
+    describe '#source' do
+      it 'should delegate to class method' do
+        expect(settings.source).to eq get_fixture_path('settings.yml')
+      end
+    end
+
+    describe '#namespace' do
+      let(:settings) do
+        Class.new(ActiveSettings::Base) do
+          source get_fixture_path('settings.yml')
+          namespace 'foo'
+        end
+      end
+
+      it 'should delegate to class method' do
+        expect(settings.namespace).to eq 'foo'
+      end
+    end
+
     describe 'settings accesors' do
       it 'should access settings by method' do
         expect(settings.foo).to eq 'bar'

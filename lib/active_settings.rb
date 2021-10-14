@@ -9,13 +9,13 @@ require 'singleton'
 require 'deep_merge'
 require 'dry-schema'
 require 'active_support/core_ext/module/attribute_accessors'
+require 'active_support/core_ext/module/delegation'
 
 require 'zeitwerk'
 loader = Zeitwerk::Loader.for_gem
 loader.setup
 
 module ActiveSettings
-
   # ActiveSettings options
   mattr_accessor :fail_on_missing,  default: false
   mattr_accessor :use_env,          default: false

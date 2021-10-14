@@ -30,6 +30,8 @@ module ActiveSettings
     end
 
 
+    delegate :source, :namespace, to: :class
+
     def initialize(file = self.class.source, namespace = self.class.namespace)
       raise ActiveSettings::Error::SourceFileNotDefinedError if file.nil?
 
