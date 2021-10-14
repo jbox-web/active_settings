@@ -31,6 +31,8 @@ module ActiveSettings
       traverse_self
     end
 
+     alias :to_h :to_hash
+
 
     def to_json(*args)
       to_hash.to_json(*args)
