@@ -22,28 +22,30 @@ RSpec.describe ActiveSettings::Base do
       end
     end
 
-    it 'should access settings by method' do
-      expect(settings.foo).to eq 'bar'
-    end
+    describe 'settings accesors' do
+      it 'should access settings by method' do
+        expect(settings.foo).to eq 'bar'
+      end
 
-    it 'should access nested settings by method' do
-      expect(settings.nested.foo).to eq 'bar'
-    end
+      it 'should access nested settings by method' do
+        expect(settings.nested.foo).to eq 'bar'
+      end
 
-    it 'should access settings by string key' do
-      expect(settings['foo']).to eq 'bar'
-    end
+      it 'should access settings by string key' do
+        expect(settings['foo']).to eq 'bar'
+      end
 
-    it 'should access nested settings by string key' do
-      expect(settings['nested']['foo']).to eq 'bar'
-    end
+      it 'should access nested settings by string key' do
+        expect(settings['nested']['foo']).to eq 'bar'
+      end
 
-    it 'should access settings by symbol key' do
-      expect(settings[:foo]).to eq 'bar'
-    end
+      it 'should access settings by symbol key' do
+        expect(settings[:foo]).to eq 'bar'
+      end
 
-    it 'should access nested settings by symbol key' do
-      expect(settings[:nested][:foo]).to eq 'bar'
+      it 'should access nested settings by symbol key' do
+        expect(settings[:nested][:foo]).to eq 'bar'
+      end
     end
 
     describe '#key?' do
