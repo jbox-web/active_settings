@@ -53,7 +53,11 @@ module ActiveSettings
 
     # rubocop:disable Security/YAMLLoad
     def load_yaml_file(file)
-      YAML.load(ERB.new(File.read(file)).result).to_hash
+      begin
+        YAML.load(ERB.new(File.read(file)).result, aliases: true).to_hash
+      rescue ArgumentError => e
+        YAML.load(ERB.new(File.read(file)).result).to_hash
+      end
     end
     # rubocop:enable Security/YAMLLoad
 
