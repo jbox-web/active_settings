@@ -6,7 +6,7 @@ require 'yaml'
 require 'ostruct'
 require 'singleton'
 
-require 'deep_merge'
+require 'deep_merge/core'
 require 'dry-schema'
 require 'active_support/core_ext/module/attribute_accessors'
 require 'active_support/core_ext/module/delegation'
