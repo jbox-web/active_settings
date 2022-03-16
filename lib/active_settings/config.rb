@@ -28,7 +28,7 @@ module ActiveSettings
 
 
     def to_hash
-      traverse_self
+      traverse_hash(self)
     end
 
      alias :to_h :to_hash
@@ -72,12 +72,12 @@ module ActiveSettings
 
 
     # rubocop:disable Metrics/MethodLength
-    def traverse_self
+    def traverse_hash(hash)
       result = {}
-      each do |k, v|
+      hash.each do |k, v|
         result[k] =
           if v.instance_of?(ActiveSettings::Config)
-            v.to_hash
+            traverse_hash(v)
           elsif v.instance_of?(Array)
             traverse_array(v)
           elsif v.instance_of?(Proc)
@@ -94,7 +94,7 @@ module ActiveSettings
     def traverse_array(array)
       array.map do |value|
         if value.instance_of?(ActiveSettings::Config)
-          value.to_hash
+          traverse_hash(value)
         elsif value.instance_of?(Array)
           traverse_array(value)
         elsif value.instance_of?(Proc)
