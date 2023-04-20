@@ -36,8 +36,9 @@ module ActiveSettings
       raise ActiveSettings::Error::SourceFileNotDefinedError if file.nil?
 
       config = load_config_file(file)
-      config = config[namespace] if namespace
-      super(config)
+      deep_merge!(config, load_namespace_file(file, namespace)) if namespace
+
+      super(__convert(config))
 
       load_settings!
     end
@@ -47,7 +48,20 @@ module ActiveSettings
 
 
     def load_config_file(file)
-      __convert load_yaml_file(file)
+      load_yaml_file(file)
+    end
+
+
+    def load_namespace_file(file, namespace)
+      ns_file = build_namespace_file_path(file, namespace)
+      return {} unless File.exist?(ns_file)
+
+      load_config_file(ns_file)
+    end
+
+
+    def build_namespace_file_path(file, namespace)
+      "#{File.dirname(file)}/#{File.basename(file, File.extname(file))}.#{namespace}.yml"
     end
 
 

@@ -40,16 +40,8 @@ module ActiveSettings
 
 
     def merge!(hash)
-      options = {
-        preserve_unmergeables: false,
-        knockout_prefix:       ActiveSettings.knockout_prefix,
-        overwrite_arrays:      ActiveSettings.overwrite_arrays,
-        merge_nil_values:      ActiveSettings.merge_nil_values,
-        keep_array_duplicates: ActiveSettings.keep_array_duplicates
-      }
-
       current = to_hash
-      DeepMerge.deep_merge!(hash.dup, current, options)
+      deep_merge!(current, hash)
       marshal_load(__convert(current).marshal_dump)
       self
     end
@@ -69,6 +61,18 @@ module ActiveSettings
 
 
     private
+
+
+    def deep_merge!(current, hash)
+      options = {
+        preserve_unmergeables: false,
+        knockout_prefix:       ActiveSettings.knockout_prefix,
+        overwrite_arrays:      ActiveSettings.overwrite_arrays,
+        merge_nil_values:      ActiveSettings.merge_nil_values,
+        keep_array_duplicates: ActiveSettings.keep_array_duplicates
+      }
+      DeepMerge.deep_merge!(hash.dup, current, options)
+    end
 
 
     # rubocop:disable Metrics/MethodLength

@@ -1,41 +1,26 @@
 ---
-# Global config
-default: &default
-  bool_true: true
-  bool_false: false
-  string: foo
-  integer: 1
-  float: 1.0
+bool_true: true
+bool_false: false
+string: foo
+integer: 1
+float: 1.0
+foo: bar
+nested:
   foo: bar
-  nested:
-    foo: bar
-  deep:
-    nested: &nested
-      warn_threshold: 100
-      warn_account: foo
-  ary:
-    - foo
-    - bar
-  ary_of_hash:
-    - { foo: 'bar' }
-    - { baz: 'bar' }
-  ary_of_ary:
-    - ['foo', 'bar']
-    - ['baz', 'bar']
-  ary_of_mix:
-    - ['foo', 'bar']
-    - { foo: 'bar' }
-  embedded_ruby: <%= 1 + 2 + 3 %>
-
-# Development config
-development:
-  <<: *default
-  foo: baz
-  deep:
-    nested:
-      <<: *nested
-      warn_threshold: 50
-
-production:
-  <<: *default
-  bool_true: false
+deep:
+  nested: &nested
+    warn_threshold: 100
+    warn_account: foo
+ary:
+  - foo
+  - bar
+ary_of_hash:
+  - { foo: 'bar' }
+  - { baz: 'bar' }
+ary_of_ary:
+  - ['foo', 'bar']
+  - ['baz', 'bar']
+ary_of_mix:
+  - ['foo', 'bar']
+  - { foo: 'bar' }
+embedded_ruby: <%= 1 + 2 + 3 %>

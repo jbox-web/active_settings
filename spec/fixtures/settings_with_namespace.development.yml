@@ -1,0 +1,5 @@
+---
+foo: baz
+deep:
+  nested:
+    warn_threshold: 50
