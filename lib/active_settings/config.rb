@@ -11,6 +11,11 @@ module ActiveSettings
     end
 
 
+    def collect(*args, &block)
+      marshal_dump.collect(*args, &block)
+    end
+
+
     def key?(key)
       self[key] ? true : false
     end
