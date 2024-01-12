@@ -4,10 +4,16 @@
 # See: https://github.com/rubyconfig/config/blob/master/lib/config/options.rb
 
 module ActiveSettings
+  # rubocop:disable Metrics/ClassLength
   class Config < OpenStruct
 
     def each(*args, &block)
       marshal_dump.each(*args, &block)
+    end
+
+
+    def each_key(*args, &block)
+      marshal_dump.each_key(*args, &block)
     end
 
 
@@ -157,4 +163,5 @@ module ActiveSettings
     # rubocop:enable Style/RescueModifier
 
   end
+  # rubocop:enable Metrics/ClassLength
 end
