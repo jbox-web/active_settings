@@ -52,6 +52,7 @@ module ActiveSettings
 
     def merge!(hash)
       current = to_hash
+      hash = hash.dup
       deep_merge!(current, hash)
       marshal_load(__convert(current).marshal_dump)
       self
@@ -82,7 +83,7 @@ module ActiveSettings
         merge_nil_values:      ActiveSettings.merge_nil_values,
         keep_array_duplicates: ActiveSettings.keep_array_duplicates
       }
-      DeepMerge.deep_merge!(hash.dup, current, options)
+      DeepMerge.deep_merge!(hash, current, options)
     end
 
 
