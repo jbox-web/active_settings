@@ -17,6 +17,11 @@ module ActiveSettings
     end
 
 
+    def each_value(*args, &block)
+      marshal_dump.each_value(*args, &block)
+    end
+
+
     def collect(*args, &block)
       marshal_dump.collect(*args, &block)
     end
