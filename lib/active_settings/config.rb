@@ -7,24 +7,91 @@ module ActiveSettings
   # rubocop:disable Metrics/ClassLength
   class Config < OpenStruct
 
-    def each(*args, &block)
-      marshal_dump.each(*args, &block)
+    class << self
+      # rubocop:disable Metrics/MethodLength
+      def traverse_hash(hash)
+        result = {}
+        hash.each do |k, v|
+          result[k] =
+            if v.instance_of?(ActiveSettings::Config)
+              traverse_hash(v)
+            elsif v.instance_of?(Array)
+              traverse_array(v)
+            elsif v.instance_of?(Proc)
+              v.call
+            else
+              v
+            end
+        end
+        result
+      end
+      # rubocop:enable Metrics/MethodLength
+
+      def traverse_array(array)
+        array.map do |value|
+          if value.instance_of?(ActiveSettings::Config)
+            traverse_hash(value)
+          elsif value.instance_of?(Array)
+            traverse_array(value)
+          elsif value.instance_of?(Proc)
+            value.call
+          else
+            value
+          end
+        end
+      end
+
+      # Recursively converts Hashes to Options (including Hashes inside Arrays)
+      # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
+      def __convert(hash)
+        settings = ActiveSettings::Config.new
+
+        hash.each do |key, value|
+          key = key.to_s if !key.respond_to?(:to_sym) && key.respond_to?(:to_s)
+
+          new_val =
+            case value
+            when Hash
+              value['type'] == 'hash' ? value['contents'] : __convert(value)
+            when Array
+              value.collect { |e| e.instance_of?(Hash) ? __convert(e) : e }
+            else
+              value
+            end
+
+          settings[key] = new_val
+        end
+
+        settings
+      end
+      # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
+
+      def deep_merge!(current, other)
+        options = {
+          preserve_unmergeables: false,
+          knockout_prefix:       ActiveSettings.knockout_prefix,
+          overwrite_arrays:      ActiveSettings.overwrite_arrays,
+          merge_nil_values:      ActiveSettings.merge_nil_values,
+          keep_array_duplicates: ActiveSettings.keep_array_duplicates
+        }
+        DeepMerge.deep_merge!(other, current, options)
+      end
+
+      BOOLEAN_MAPPING = { 'true' => true, 'false' => false }.freeze
+      private_constant :BOOLEAN_MAPPING
+
+      def __value(val)
+        BOOLEAN_MAPPING.fetch(val) { auto_type(val) }
+      end
+
+      # rubocop:disable Style/RescueModifier
+      def auto_type(val)
+        Integer(val) rescue Float(val) rescue val
+      end
+      # rubocop:enable Style/RescueModifier
     end
 
-
-    def each_key(*args, &block)
-      marshal_dump.each_key(*args, &block)
-    end
-
-
-    def each_value(*args, &block)
-      marshal_dump.each_value(*args, &block)
-    end
-
-
-    def collect(*args, &block)
-      marshal_dump.collect(*args, &block)
-    end
+    delegate :each, :each_key, :each_value, :collect, :keys, :empty?, to: :marshal_dump
 
 
     def key?(key)
@@ -44,10 +111,10 @@ module ActiveSettings
 
 
     def to_hash
-      traverse_hash(self)
+      self.class.traverse_hash(self)
     end
 
-     alias :to_h :to_hash
+    alias :to_h :to_hash
 
 
     def to_json(*args)
@@ -55,11 +122,11 @@ module ActiveSettings
     end
 
 
-    def merge!(hash)
+    def merge!(other)
       current = to_hash
-      hash = hash.dup
-      deep_merge!(current, hash)
-      marshal_load(__convert(current).marshal_dump)
+      other = other.dup
+      self.class.deep_merge!(current, other)
+      marshal_load(self.class.__convert(current).marshal_dump)
       self
     end
 
@@ -75,98 +142,6 @@ module ActiveSettings
     def respond_to_missing?(*args)
       super
     end
-
-
-    private
-
-
-    def deep_merge!(current, hash)
-      options = {
-        preserve_unmergeables: false,
-        knockout_prefix:       ActiveSettings.knockout_prefix,
-        overwrite_arrays:      ActiveSettings.overwrite_arrays,
-        merge_nil_values:      ActiveSettings.merge_nil_values,
-        keep_array_duplicates: ActiveSettings.keep_array_duplicates
-      }
-      DeepMerge.deep_merge!(hash, current, options)
-    end
-
-
-    # rubocop:disable Metrics/MethodLength
-    def traverse_hash(hash)
-      result = {}
-      hash.each do |k, v|
-        result[k] =
-          if v.instance_of?(ActiveSettings::Config)
-            traverse_hash(v)
-          elsif v.instance_of?(Array)
-            traverse_array(v)
-          elsif v.instance_of?(Proc)
-            v.call
-          else
-            v
-          end
-      end
-      result
-    end
-    # rubocop:enable Metrics/MethodLength
-
-
-    def traverse_array(array)
-      array.map do |value|
-        if value.instance_of?(ActiveSettings::Config)
-          traverse_hash(value)
-        elsif value.instance_of?(Array)
-          traverse_array(value)
-        elsif value.instance_of?(Proc)
-          value.call
-        else
-          value
-        end
-      end
-    end
-
-
-    # Recursively converts Hashes to Options (including Hashes inside Arrays)
-    # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize
-    def __convert(hash)
-      s = ActiveSettings::Config.new
-
-      hash.each do |key, value|
-        key = key.to_s if !key.respond_to?(:to_sym) && key.respond_to?(:to_s)
-
-        new_val =
-          case value
-          when Hash
-            value['type'] == 'hash' ? value['contents'] : __convert(value)
-          when Array
-            value.collect { |e| e.instance_of?(Hash) ? __convert(e) : e }
-          else
-            value
-          end
-
-        s[key] = new_val
-      end
-      s
-    end
-    # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize
-
-
-    BOOLEAN_MAPPING = { 'true' => true, 'false' => false }.freeze
-    private_constant :BOOLEAN_MAPPING
-
-
-    # Try to convert boolean string to a correct type
-    def __value(val)
-      BOOLEAN_MAPPING.fetch(val) { auto_type(val) }
-    end
-
-
-    # rubocop:disable Style/RescueModifier
-    def auto_type(val)
-      Integer(val) rescue Float(val) rescue val
-    end
-    # rubocop:enable Style/RescueModifier
 
   end
   # rubocop:enable Metrics/ClassLength

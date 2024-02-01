@@ -21,14 +21,57 @@ module ActiveSettings
         instance.to_json(*args)
       end
 
+      # Borrowed from [config gem](https://github.com/rubyconfig/config/blob/master/lib/config/options.rb)
+      # See: https://github.com/rubyconfig/config/commit/351c819f75d53aa5621a226b5957c79ac82ded11
+      # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
+      def reload_env
+        return if ENV.nil? || ENV.empty?
+
+        raise ActiveSettings::Error::EnvPrefixNotDefinedError if ActiveSettings.env_prefix.nil?
+
+        separator = ActiveSettings.env_separator
+        prefix = ActiveSettings.env_prefix.to_s.split(separator)
+
+        hash = {}
+
+        ENV.each do |variable, value|
+          keys = variable.to_s.split(separator)
+
+          next if keys.shift(prefix.size) != prefix
+
+          keys.map! do |key|
+            case ActiveSettings.env_converter
+            when :downcase
+              key.downcase.to_sym
+            when nil
+              key.to_sym
+            else
+              raise "Invalid ENV variables name converter: #{ActiveSettings.env_converter}"
+            end
+          end
+
+          leaf = keys[0...-1].inject(hash) do |h, key|
+            h[key] ||= {}
+          end
+
+          leaf[keys.last] = ActiveSettings.env_parse_values ? __value(value) : value
+        end
+
+        hash
+      end
+      # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
+
       private
 
       def method_missing(name, *args, &block)
         instance.send(name, *args, &block)
       end
 
-    end
+      def respond_to_missing?(*args)
+        super
+      end
 
+    end
 
     delegate :source, :namespace, to: :class
 
@@ -36,13 +79,15 @@ module ActiveSettings
       raise ActiveSettings::Error::SourceFileNotDefinedError if file.nil?
 
       config = load_config_file(file)
-      deep_merge!(config, load_namespace_file(file, namespace)) if namespace
+      self.class.deep_merge!(config, load_namespace_file(file, namespace)) if namespace
 
-      super(__convert(config))
+      super(self.class.__convert(config))
 
       yield if block_given?
 
-      load_settings!
+      reload_env! if ActiveSettings.use_env
+
+      after_initialize!
     end
 
 
@@ -78,50 +123,11 @@ module ActiveSettings
     # rubocop:enable Security/YAMLLoad
 
 
-    def load_settings!
-      reload_env! if ActiveSettings.use_env
-    end
-
-
-    # Borrowed from [config gem](https://github.com/rubyconfig/config/blob/master/lib/config/options.rb)
-    # See: https://github.com/rubyconfig/config/commit/351c819f75d53aa5621a226b5957c79ac82ded11
-    # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
     def reload_env!
-      return if ENV.nil? || ENV.empty?
-
-      raise ActiveSettings::Error::EnvPrefixNotDefinedError if ActiveSettings.env_prefix.nil?
-
-      separator = ActiveSettings.env_separator
-      prefix = ActiveSettings.env_prefix.to_s.split(separator)
-
-      hash = {}
-
-      ENV.each do |variable, value|
-        keys = variable.to_s.split(separator)
-
-        next if keys.shift(prefix.size) != prefix
-
-        keys.map! do |key|
-          case ActiveSettings.env_converter
-          when :downcase
-            key.downcase.to_sym
-          when nil
-            key.to_sym
-          else
-            raise "Invalid ENV variables name converter: #{ActiveSettings.env_converter}"
-          end
-        end
-
-        leaf = keys[0...-1].inject(hash) do |h, key|
-          h[key] ||= {}
-        end
-
-        leaf[keys.last] = ActiveSettings.env_parse_values ? __value(value) : value
-      end
-
-      merge!(hash)
+      merge!(self.class.reload_env)
     end
-    # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
 
+    def after_initialize!
+    end
   end
 end

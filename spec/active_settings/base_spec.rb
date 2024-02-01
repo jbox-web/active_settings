@@ -1151,7 +1151,7 @@ RSpec.describe ActiveSettings::Base do
         source    get_fixture_path('settings_with_namespace.yml')
         namespace 'production'
 
-        def load_settings!
+        def after_initialize!
           super
           load_storage_config!
         end
