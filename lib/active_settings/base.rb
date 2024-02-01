@@ -40,6 +40,8 @@ module ActiveSettings
 
       super(__convert(config))
 
+      yield if block_given?
+
       load_settings!
     end
 
