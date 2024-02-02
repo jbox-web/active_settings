@@ -76,19 +76,6 @@ module ActiveSettings
         }
         DeepMerge.deep_merge!(other, current, options)
       end
-
-      BOOLEAN_MAPPING = { 'true' => true, 'false' => false }.freeze
-      private_constant :BOOLEAN_MAPPING
-
-      def __value(val)
-        BOOLEAN_MAPPING.fetch(val) { auto_type(val) }
-      end
-
-      # rubocop:disable Style/RescueModifier
-      def auto_type(val)
-        Integer(val) rescue Float(val) rescue val
-      end
-      # rubocop:enable Style/RescueModifier
     end
 
     delegate :each, :each_key, :each_value, :collect, :keys, :empty?, to: :marshal_dump

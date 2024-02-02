@@ -54,7 +54,7 @@ module ActiveSettings
             h[key] ||= {}
           end
 
-          leaf[keys.last] = ActiveSettings.env_parse_values ? __value(value) : value
+          leaf[keys.last] = ActiveSettings.env_parse_values ? cast_value(value) : value
         end
 
         hash
@@ -62,6 +62,19 @@ module ActiveSettings
       # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
 
       private
+
+      BOOLEAN_MAPPING = { 'true' => true, 'false' => false }.freeze
+      private_constant :BOOLEAN_MAPPING
+
+      def cast_value(val)
+        BOOLEAN_MAPPING.fetch(val) { auto_type(val) }
+      end
+
+      # rubocop:disable Style/RescueModifier
+      def auto_type(val)
+        Integer(val) rescue Float(val) rescue val
+      end
+      # rubocop:enable Style/RescueModifier
 
       def method_missing(name, *args, &block)
         instance.send(name, *args, &block)
