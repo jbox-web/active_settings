@@ -61,6 +61,14 @@ module ActiveSettings
       end
       # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
 
+      def method_missing(name, *args, &block)
+        instance.send(name, *args, &block)
+      end
+
+      def respond_to_missing?(*args)
+        instance.respond_to_missing?(*args)
+      end
+
       private
 
       BOOLEAN_MAPPING = { 'true' => true, 'false' => false }.freeze
@@ -75,14 +83,6 @@ module ActiveSettings
         Integer(val) rescue Float(val) rescue val
       end
       # rubocop:enable Style/RescueModifier
-
-      def method_missing(name, *args, &block)
-        instance.send(name, *args, &block)
-      end
-
-      def respond_to_missing?(*args)
-        instance.respond_to_missing(*args)
-      end
 
     end
 
