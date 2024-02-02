@@ -61,6 +61,14 @@ module ActiveSettings
       end
       # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
 
+      def load_yaml_file(file)
+        begin
+          YAML.load(ERB.new(File.read(file)).result, aliases: true).to_hash
+        rescue ArgumentError => e
+          YAML.load(ERB.new(File.read(file)).result).to_hash
+        end
+      end
+
       def method_missing(name, *args, &block)
         instance.send(name, *args, &block)
       end
@@ -127,11 +135,7 @@ module ActiveSettings
 
     # rubocop:disable Security/YAMLLoad
     def load_yaml_file(file)
-      begin
-        YAML.load(ERB.new(File.read(file)).result, aliases: true).to_hash
-      rescue ArgumentError => e
-        YAML.load(ERB.new(File.read(file)).result).to_hash
-      end
+      self.class.load_yaml_file(file)
     end
     # rubocop:enable Security/YAMLLoad
 
