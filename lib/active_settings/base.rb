@@ -99,7 +99,7 @@ module ActiveSettings
     def initialize(file = self.class.source, namespace = self.class.namespace)
       raise ActiveSettings::Error::SourceFileNotDefinedError if file.nil?
 
-      config = load_config_file(file)
+      config = load_yaml_file(file)
       self.class.deep_merge!(config, load_namespace_file(file, namespace)) if namespace
 
       super(self.class.convert_hash(config))
@@ -115,16 +115,11 @@ module ActiveSettings
     private
 
 
-    def load_config_file(file)
-      load_yaml_file(file)
-    end
-
-
     def load_namespace_file(file, namespace)
       ns_file = build_namespace_file_path(file, namespace)
       return {} unless File.exist?(ns_file)
 
-      load_config_file(ns_file)
+      load_yaml_file(ns_file)
     end
 
 
