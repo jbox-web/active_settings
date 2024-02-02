@@ -4,9 +4,9 @@ module ActiveSettings
   module Validation
     class Error < StandardError
 
-      def self.format(v_res)
+      def self.format(v_res, env_prefix)
         flatten_hash(v_res.errors.to_h).map do |field, msgs|
-          "#{' ' * 2}#{field}: #{msgs.join('; ')}"
+          "#{' ' * 2}#{env_prefix}.#{field.upcase}: #{msgs.join('; ')}"
         end.join("\n")
       end
 
