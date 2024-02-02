@@ -21,6 +21,14 @@ module ActiveSettings
         instance.to_json(*args)
       end
 
+      def method_missing(name, *args, &block)
+        instance.send(name, *args, &block)
+      end
+
+      def respond_to_missing?(*args)
+        instance.respond_to_missing?(*args)
+      end
+
       # Borrowed from [config gem](https://github.com/rubyconfig/config/blob/master/lib/config/options.rb)
       # See: https://github.com/rubyconfig/config/commit/351c819f75d53aa5621a226b5957c79ac82ded11
       # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
@@ -68,14 +76,6 @@ module ActiveSettings
         YAML.load(ERB.new(File.read(file)).result).to_hash
       end
       # rubocop:enable Security/YAMLLoad
-
-      def method_missing(name, *args, &block)
-        instance.send(name, *args, &block)
-      end
-
-      def respond_to_missing?(*args)
-        instance.respond_to_missing?(*args)
-      end
 
       private
 
