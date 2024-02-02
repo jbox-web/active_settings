@@ -29,84 +29,23 @@ module ActiveSettings
         instance.respond_to_missing?(*args)
       end
 
-      # Borrowed from [config gem](https://github.com/rubyconfig/config/blob/master/lib/config/options.rb)
-      # See: https://github.com/rubyconfig/config/commit/351c819f75d53aa5621a226b5957c79ac82ded11
-      # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
-      def reload_env
-        return if ENV.nil? || ENV.empty?
-
-        raise ActiveSettings::Error::EnvPrefixNotDefinedError if ActiveSettings.env_prefix.nil?
-
-        separator = ActiveSettings.env_separator
-        prefix = ActiveSettings.env_prefix.to_s.split(separator)
-
-        hash = {}
-
-        ENV.each do |variable, value|
-          keys = variable.to_s.split(separator)
-
-          next if keys.shift(prefix.size) != prefix
-
-          keys.map! do |key|
-            case ActiveSettings.env_converter
-            when :downcase
-              key.downcase.to_sym
-            when nil
-              key.to_sym
-            else
-              raise "Invalid ENV variables name converter: #{ActiveSettings.env_converter}"
-            end
-          end
-
-          leaf = keys[0...-1].inject(hash) do |h, key|
-            h[key] ||= {}
-          end
-
-          leaf[keys.last] = ActiveSettings.env_parse_values ? cast_value(value) : value
-        end
-
-        hash
-      end
-      # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
-
-      # rubocop:disable Security/YAMLLoad
-      def load_yaml_file(file)
-        YAML.load(ERB.new(File.read(file)).result, aliases: true).to_hash
-      rescue ArgumentError
-        YAML.load(ERB.new(File.read(file)).result).to_hash
-      end
-      # rubocop:enable Security/YAMLLoad
-
-      private
-
-      BOOLEAN_MAPPING = { 'true' => true, 'false' => false }.freeze
-      private_constant :BOOLEAN_MAPPING
-
-      def cast_value(val)
-        BOOLEAN_MAPPING.fetch(val) { auto_type(val) }
-      end
-
-      # rubocop:disable Style/RescueModifier
-      def auto_type(val)
-        Integer(val) rescue Float(val) rescue val
-      end
-      # rubocop:enable Style/RescueModifier
-
     end
 
     delegate :source, :namespace, to: :class
 
-    def initialize(file = self.class.source, namespace = self.class.namespace)
+    def initialize(file: self.class.source, namespace: self.class.namespace)
       raise ActiveSettings::Error::SourceFileNotDefinedError if file.nil?
 
       config = load_yaml_file(file)
-      self.class.deep_merge!(config, load_namespace_file(file, namespace)) if namespace
+      ActiveSettings.deep_merge_hash!(config, load_namespace_file(file, namespace)) if namespace
 
-      super(self.class.convert_hash(config))
+      super(ActiveSettings.from_hash(config))
+
+      before_initialize!
+
+      merge!(ActiveSettings.from_env(ENV))
 
       yield if block_given?
-
-      reload_env! if ActiveSettings.use_env
 
       after_initialize!
     end
@@ -116,25 +55,19 @@ module ActiveSettings
 
 
     def load_namespace_file(file, namespace)
-      ns_file = build_namespace_file_path(file, namespace)
+      ns_file = "#{File.dirname(file)}/#{File.basename(file, File.extname(file))}.#{namespace}.yml"
       return {} unless File.exist?(ns_file)
 
       load_yaml_file(ns_file)
     end
 
 
-    def build_namespace_file_path(file, namespace)
-      "#{File.dirname(file)}/#{File.basename(file, File.extname(file))}.#{namespace}.yml"
-    end
-
-
     def load_yaml_file(file)
-      self.class.load_yaml_file(file)
+      ActiveSettings.load_yaml_file(file)
     end
 
 
-    def reload_env!
-      merge!(self.class.reload_env)
+    def before_initialize!
     end
 
 
