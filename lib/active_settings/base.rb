@@ -68,7 +68,7 @@ module ActiveSettings
       end
 
       def respond_to_missing?(*args)
-        super
+        instance.respond_to_missing(*args)
       end
 
     end
@@ -127,7 +127,9 @@ module ActiveSettings
       merge!(self.class.reload_env)
     end
 
+
     def after_initialize!
     end
+
   end
 end

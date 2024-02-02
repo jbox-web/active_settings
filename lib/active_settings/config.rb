@@ -139,8 +139,8 @@ module ActiveSettings
     end
 
 
-    def respond_to_missing?(*args)
-      super
+    def respond_to_missing?(method_name, include_private = false)
+      key?(method_name) || super
     end
 
   end
