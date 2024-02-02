@@ -4,7 +4,6 @@
 # See: https://github.com/rubyconfig/config/blob/master/lib/config/options.rb
 
 module ActiveSettings
-  # rubocop:disable Metrics/ClassLength
   class Config < OpenStruct
 
     class << self
@@ -131,5 +130,4 @@ module ActiveSettings
     end
 
   end
-  # rubocop:enable Metrics/ClassLength
 end
