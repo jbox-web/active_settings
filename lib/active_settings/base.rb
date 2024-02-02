@@ -81,7 +81,7 @@ module ActiveSettings
       config = load_config_file(file)
       self.class.deep_merge!(config, load_namespace_file(file, namespace)) if namespace
 
-      super(self.class.__convert(config))
+      super(self.class.convert_hash(config))
 
       yield if block_given?
 

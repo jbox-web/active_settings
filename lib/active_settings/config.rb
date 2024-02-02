@@ -43,7 +43,7 @@ module ActiveSettings
 
       # Recursively converts Hashes to Options (including Hashes inside Arrays)
       # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
-      def __convert(hash)
+      def convert_hash(hash)
         settings = ActiveSettings::Config.new
 
         hash.each do |key, value|
@@ -52,9 +52,9 @@ module ActiveSettings
           new_val =
             case value
             when Hash
-              value['type'] == 'hash' ? value['contents'] : __convert(value)
+              value['type'] == 'hash' ? value['contents'] : convert_hash(value)
             when Array
-              value.collect { |e| e.instance_of?(Hash) ? __convert(e) : e }
+              value.collect { |e| e.instance_of?(Hash) ? convert_hash(e) : e }
             else
               value
             end
@@ -126,7 +126,7 @@ module ActiveSettings
       current = to_hash
       other = other.dup
       self.class.deep_merge!(current, other)
-      marshal_load(self.class.__convert(current).marshal_dump)
+      marshal_load(self.class.convert_hash(current).marshal_dump)
       self
     end
 
