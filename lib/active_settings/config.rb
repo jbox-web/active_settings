@@ -47,9 +47,12 @@ module ActiveSettings
 
 
     def method_missing(method_name, *args)
+      return super if method_name == :respond_to_missing?
+
       if ActiveSettings.fail_on_missing && method_name !~ /.*(?==\z)/m
         raise KeyError, "key not found: #{method_name.inspect}" unless key?(method_name)
       end
+
       super
     end
 
@@ -57,6 +60,8 @@ module ActiveSettings
     def respond_to_missing?(method_name, include_private = false)
       key?(method_name) || super
     end
+
+    public :respond_to_missing?
 
   end
 end
