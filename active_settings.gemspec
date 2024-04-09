@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'zeitwerk'
 
   s.add_development_dependency 'appraisal'
+  s.add_development_dependency 'debug'
   s.add_development_dependency 'guard-rspec'
   s.add_development_dependency 'pry'
   s.add_development_dependency 'rake'
@@ -35,5 +36,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rubocop'
   s.add_development_dependency 'rubocop-rake'
   s.add_development_dependency 'rubocop-rspec'
+  s.add_development_dependency 'ruby-lsp'
+  s.add_development_dependency 'ruby-lsp-rspec'
   s.add_development_dependency 'simplecov'
 end
