@@ -46,6 +46,12 @@ module ActiveSettings
     end
 
 
+    def freeze
+      ActiveSettings.deep_freeze(self)
+      super
+    end
+
+
     def method_missing(method_name, *args)
       return super if method_name == :respond_to_missing?
 

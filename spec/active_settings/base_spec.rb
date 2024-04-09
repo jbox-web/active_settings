@@ -675,6 +675,35 @@ RSpec.describe ActiveSettings::Base do
       end
     end
 
+    describe '#freeze' do
+      def deep_array_validation(array)
+        array.map do |value|
+          if value.instance_of?(ActiveSettings::Config)
+            deep_config_validation(value)
+          elsif value.instance_of?(Array)
+            deep_array_validation(value)
+          end
+        end
+      end
+
+      def deep_config_validation(hash)
+        hash.each do |k, v|
+          if v.instance_of?(ActiveSettings::Config)
+            expect(v.frozen?).to be true
+            deep_config_validation(v)
+          elsif v.instance_of?(Array)
+            deep_array_validation(v)
+          end
+        end
+      end
+
+      it 'deep freeze object' do
+        instance.freeze
+        expect(instance.frozen?).to be true
+        deep_config_validation(instance)
+      end
+    end
+
     context 'when use_env is true' do
       context 'with boolean' do
         context 'when boolean is false' do

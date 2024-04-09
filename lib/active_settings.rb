@@ -36,6 +36,10 @@ module ActiveSettings
       traverse_config(config)
     end
 
+    def deep_freeze(config)
+      freeze_config(config)
+    end
+
     # Recursively converts Hashes to Options (including Hashes inside Arrays)
     # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
     def from_hash(hash)
@@ -152,6 +156,26 @@ module ActiveSettings
           value.call
         else
           value
+        end
+      end
+    end
+
+    def freeze_config(hash)
+      hash.each do |k, v|
+        if v.instance_of?(ActiveSettings::Config)
+          v.freeze
+        elsif v.instance_of?(Array)
+          freeze_array(v)
+        end
+      end
+    end
+
+    def freeze_array(array)
+      array.map do |value|
+        if value.instance_of?(ActiveSettings::Config)
+          value.freeze
+        elsif value.instance_of?(Array)
+          freeze_array(value)
         end
       end
     end
