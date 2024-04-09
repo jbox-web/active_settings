@@ -17,18 +17,6 @@ module ActiveSettings
         @namespace ||= value
       end
 
-      def to_json(*args)
-        instance.to_json(*args)
-      end
-
-      def method_missing(name, *args, &block)
-        instance.send(name, *args, &block)
-      end
-
-      def respond_to_missing?(*args)
-        instance.respond_to_missing?(*args)
-      end
-
     end
 
     delegate :source, :namespace, to: :class

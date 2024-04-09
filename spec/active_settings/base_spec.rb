@@ -8,9 +8,11 @@ RSpec.describe ActiveSettings::Base do
       end
     end
 
+    let(:instance) { settings.instance }
+
     it 'should raise an error' do
       expect {
-        settings.instance
+        instance
       }.to raise_error(ActiveSettings::Error::SourceFileNotDefinedError)
     end
   end
@@ -22,9 +24,11 @@ RSpec.describe ActiveSettings::Base do
       end
     end
 
+    let(:instance) { settings.instance }
+
     describe '#source' do
       it 'should delegate to class method' do
-        expect(settings.source).to eq get_fixture_path('settings.yml')
+        expect(instance.source).to eq get_fixture_path('settings.yml')
       end
     end
 
@@ -36,83 +40,85 @@ RSpec.describe ActiveSettings::Base do
         end
       end
 
+      let(:instance) { settings.instance }
+
       it 'should delegate to class method' do
-        expect(settings.namespace).to eq 'foo'
+        expect(instance.namespace).to eq 'foo'
       end
     end
 
     describe 'settings accesors' do
       it 'should access settings by method' do
-        expect(settings.foo).to eq 'bar'
+        expect(instance.foo).to eq 'bar'
       end
 
       it 'should access nested settings by method' do
-        expect(settings.nested.foo).to eq 'bar'
+        expect(instance.nested.foo).to eq 'bar'
       end
 
       it 'should access settings by string key' do
-        expect(settings['foo']).to eq 'bar'
+        expect(instance['foo']).to eq 'bar'
       end
 
       it 'should access nested settings by string key' do
-        expect(settings['nested']['foo']).to eq 'bar'
+        expect(instance['nested']['foo']).to eq 'bar'
       end
 
       it 'should access settings by symbol key' do
-        expect(settings[:foo]).to eq 'bar'
+        expect(instance[:foo]).to eq 'bar'
       end
 
       it 'should access nested settings by symbol key' do
-        expect(settings[:nested][:foo]).to eq 'bar'
+        expect(instance[:nested][:foo]).to eq 'bar'
       end
     end
 
     describe '#key?' do
       context 'when string key exist' do
         it 'should return true' do
-          expect(settings.key?('foo')).to be true
+          expect(instance.key?('foo')).to be true
         end
       end
 
       context 'when string key dont exist' do
         it 'should return false' do
-          expect(settings.key?('bar')).to be false
+          expect(instance.key?('bar')).to be false
         end
       end
 
       context 'when symbol key exist' do
         it 'should return true' do
-          expect(settings.key?(:foo)).to be true
+          expect(instance.key?(:foo)).to be true
         end
       end
 
       context 'when symbol key dont exist' do
         it 'should return false' do
-          expect(settings.key?(:bar)).to be false
+          expect(instance.key?(:bar)).to be false
         end
       end
 
       context 'when nested string key exist' do
         it 'should return true' do
-          expect(settings.nested.key?('foo')).to be true
+          expect(instance.nested.key?('foo')).to be true
         end
       end
 
       context 'when nested string key dont exist' do
         it 'should return false' do
-          expect(settings.nested.key?('bar')).to be false
+          expect(instance.nested.key?('bar')).to be false
         end
       end
 
       context 'when nested symbol key exist' do
         it 'should return true' do
-          expect(settings.nested.key?(:foo)).to be true
+          expect(instance.nested.key?(:foo)).to be true
         end
       end
 
       context 'when nested symbol key dont exist' do
         it 'should return false' do
-          expect(settings.nested.key?(:bar)).to be false
+          expect(instance.nested.key?(:bar)).to be false
         end
       end
     end
@@ -120,61 +126,61 @@ RSpec.describe ActiveSettings::Base do
     describe '#fetch' do
       context 'when string key exist' do
         it 'should return value' do
-          expect(settings.fetch('foo')).to eq 'bar'
+          expect(instance.fetch('foo')).to eq 'bar'
         end
       end
 
       context 'when string key dont exist' do
         it 'should return nil' do
-          expect(settings.fetch('bar')).to be nil
+          expect(instance.fetch('bar')).to be nil
         end
       end
 
       context 'when symbol key exist' do
         it 'should return value' do
-          expect(settings.fetch(:foo)).to eq 'bar'
+          expect(instance.fetch(:foo)).to eq 'bar'
         end
       end
 
       context 'when symbol key dont exist' do
         it 'should return nil' do
-          expect(settings.fetch(:bar)).to be nil
+          expect(instance.fetch(:bar)).to be nil
         end
       end
 
       context 'when nested string key exist' do
         it 'should return value' do
-          expect(settings.nested.fetch('foo')).to eq 'bar'
+          expect(instance.nested.fetch('foo')).to eq 'bar'
         end
       end
 
       context 'when nested string key dont exist' do
         it 'should return nil' do
-          expect(settings.nested.fetch('bar')).to be nil
+          expect(instance.nested.fetch('bar')).to be nil
         end
       end
 
       context 'when nested symbol key exist' do
         it 'should return value' do
-          expect(settings.nested.fetch(:foo)).to eq 'bar'
+          expect(instance.nested.fetch(:foo)).to eq 'bar'
         end
       end
 
       context 'when nested symbol key dont exist' do
         it 'should return nil' do
-          expect(settings.nested.fetch(:bar)).to be nil
+          expect(instance.nested.fetch(:bar)).to be nil
         end
       end
 
       context 'when key dont exist and a default value is given' do
         it 'should return default value' do
-          expect(settings.fetch(:path, 'foo')).to eq 'foo'
+          expect(instance.fetch(:path, 'foo')).to eq 'foo'
         end
       end
 
       context 'when key dont exist and a block is given' do
         it 'should yield block' do
-          expect(settings.fetch(:path){ 'foo' }).to eq 'foo'
+          expect(instance.fetch(:path){ 'foo' }).to eq 'foo'
         end
       end
     end
@@ -182,32 +188,32 @@ RSpec.describe ActiveSettings::Base do
     describe '#dig' do
       context 'when nested string key exist' do
         it 'should return value' do
-          expect(settings.dig('nested', 'foo')).to eq 'bar'
+          expect(instance.dig('nested', 'foo')).to eq 'bar'
         end
       end
 
       context 'when nested string key dont exist' do
         it 'should return nil' do
-          expect(settings.dig('nested', 'bar')).to be nil
+          expect(instance.dig('nested', 'bar')).to be nil
         end
       end
 
       context 'when nested symbol key exist' do
         it 'should return value' do
-          expect(settings.dig(:nested, :foo)).to eq 'bar'
+          expect(instance.dig(:nested, :foo)).to eq 'bar'
         end
       end
 
       context 'when nested symbol key dont exist' do
         it 'should return nil' do
-          expect(settings.dig(:nested, :bar)).to be nil
+          expect(instance.dig(:nested, :bar)).to be nil
         end
       end
     end
 
     describe '#each' do
       it 'should iterate on Settings' do
-        expect(settings.each.to_h).to eq({
+        expect(instance.each.to_h).to eq({
           bool_true: true,
           bool_false: false,
           string: 'foo',
@@ -239,7 +245,7 @@ RSpec.describe ActiveSettings::Base do
 
     describe '#to_hash' do
       it 'should return config as hash' do
-        expect(settings.to_hash).to eq({
+        expect(instance.to_hash).to eq({
           bool_true: true,
           bool_false: false,
           string: 'foo',
@@ -277,8 +283,8 @@ RSpec.describe ActiveSettings::Base do
 
     describe '#to_json' do
       it 'should return config as json' do
-        expect(settings.to_json).to eq '{"bool_true":true,"bool_false":false,"string":"foo","integer":1,"float":1.0,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"baz":"bar"}],"ary_of_ary":[["foo","bar"],["baz","bar"]],"ary_of_mix":[["foo","bar"],{"foo":"bar"}],"embedded_ruby":6}'
-        expect(settings.send(:to_json)).to eq '{"bool_true":true,"bool_false":false,"string":"foo","integer":1,"float":1.0,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"baz":"bar"}],"ary_of_ary":[["foo","bar"],["baz","bar"]],"ary_of_mix":[["foo","bar"],{"foo":"bar"}],"embedded_ruby":6}'
+        expect(instance.to_json).to eq '{"bool_true":true,"bool_false":false,"string":"foo","integer":1,"float":1.0,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"baz":"bar"}],"ary_of_ary":[["foo","bar"],["baz","bar"]],"ary_of_mix":[["foo","bar"],{"foo":"bar"}],"embedded_ruby":6}'
+        expect(instance.send(:to_json)).to eq '{"bool_true":true,"bool_false":false,"string":"foo","integer":1,"float":1.0,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"baz":"bar"}],"ary_of_ary":[["foo","bar"],["baz","bar"]],"ary_of_mix":[["foo","bar"],{"foo":"bar"}],"embedded_ruby":6}'
       end
     end
 
@@ -286,18 +292,18 @@ RSpec.describe ActiveSettings::Base do
       context 'when fail_on_missing is false' do
         it 'should not raise error when accessing missing key' do
           expect {
-            settings.path
+            instance.path
           }.to_not raise_error
         end
 
         it 'should not raise error when accessing missing nested key' do
           expect {
-            settings.nested.path
+            instance.nested.path
           }.to_not raise_error
         end
 
         it 'should return nil when accessing missing nested key' do
-          expect(settings.nested.path).to be nil
+          expect(instance.nested.path).to be nil
         end
       end
 
@@ -307,13 +313,13 @@ RSpec.describe ActiveSettings::Base do
 
         it 'should raise error when accessing missing key' do
           expect {
-            settings.path
+            instance.path
           }.to raise_error(KeyError).with_message('key not found: :path')
         end
 
         it 'should raise error when accessing nested missing key' do
           expect {
-            settings.nested.path
+            instance.nested.path
           }.to raise_error(KeyError).with_message('key not found: :path')
         end
       end
@@ -321,7 +327,7 @@ RSpec.describe ActiveSettings::Base do
 
     describe '#merge' do
       it 'should merge hash' do
-        expect(settings.merge!(baz: 'bar').to_hash).to eq({
+        expect(instance.merge!(baz: 'bar').to_hash).to eq({
           bool_true: true,
           bool_false: false,
           string: 'foo',
@@ -358,7 +364,7 @@ RSpec.describe ActiveSettings::Base do
       end
 
       it 'should merge nested hash' do
-        expect(settings.merge!(nested: { baz: 'bar' }).to_hash).to eq({
+        expect(instance.merge!(nested: { baz: 'bar' }).to_hash).to eq({
           bool_true: true,
           bool_false: false,
           string: 'foo',
@@ -396,7 +402,7 @@ RSpec.describe ActiveSettings::Base do
 
       context 'when overwrite_arrays is true (default)' do
         it 'should merge/overwrite nested ary' do
-          expect(settings.merge!(ary: ['baz']).to_hash).to eq({
+          expect(instance.merge!(ary: ['baz']).to_hash).to eq({
             bool_true: true,
             bool_false: false,
             string: 'foo',
@@ -431,7 +437,7 @@ RSpec.describe ActiveSettings::Base do
         end
 
         it 'should merge/overwrite nested ary of hash' do
-          expect(settings.merge!(ary_of_hash: [{ foo: 'bar' }]).to_hash).to eq({
+          expect(instance.merge!(ary_of_hash: [{ foo: 'bar' }]).to_hash).to eq({
             bool_true: true,
             bool_false: false,
             string: 'foo',
@@ -466,7 +472,7 @@ RSpec.describe ActiveSettings::Base do
         end
 
         it 'should merge/overwrite nested ary of ary' do
-          expect(settings.merge!(ary_of_ary: [['foo', 'bar']]).to_hash).to eq({
+          expect(instance.merge!(ary_of_ary: [['foo', 'bar']]).to_hash).to eq({
             bool_true: true,
             bool_false: false,
             string: 'foo',
@@ -506,7 +512,7 @@ RSpec.describe ActiveSettings::Base do
         after  { ActiveSettings.overwrite_arrays = true }
 
         it 'should merge/extend nested ary' do
-          expect(settings.merge!(ary: ['baz']).to_hash).to eq({
+          expect(instance.merge!(ary: ['baz']).to_hash).to eq({
             bool_true: true,
             bool_false: false,
             string: 'foo',
@@ -543,7 +549,7 @@ RSpec.describe ActiveSettings::Base do
         end
 
         it 'should merge/extend nested ary of hash' do
-          expect(settings.merge!(ary_of_hash: [{ foo: 'baz' }]).to_hash).to eq({
+          expect(instance.merge!(ary_of_hash: [{ foo: 'baz' }]).to_hash).to eq({
             bool_true: true,
             bool_false: false,
             string: 'foo',
@@ -580,7 +586,7 @@ RSpec.describe ActiveSettings::Base do
         end
 
         it 'should merge/extend nested ary of ary' do
-          expect(settings.merge!(ary_of_ary: [['foo', 'baz']]).to_hash).to eq({
+          expect(instance.merge!(ary_of_ary: [['foo', 'baz']]).to_hash).to eq({
             bool_true: true,
             bool_false: false,
             string: 'foo',
@@ -622,7 +628,7 @@ RSpec.describe ActiveSettings::Base do
       context 'when schema is not defined' do
         it 'should do nothing' do
           expect {
-           settings.validate!
+           instance.validate!
           }.to_not raise_error
         end
       end
@@ -654,7 +660,7 @@ RSpec.describe ActiveSettings::Base do
         context 'when schema is valid' do
           it 'should validate settings' do
             expect {
-             with_valid_schema.validate!
+             with_valid_schema.instance.validate!
             }.to_not raise_error
           end
         end
@@ -662,7 +668,7 @@ RSpec.describe ActiveSettings::Base do
         context 'when schema is invalid' do
           it 'should validate settings' do
             expect {
-             with_invalid_schema.validate!
+             with_invalid_schema.instance.validate!
             }.to raise_error(ActiveSettings::Validation::Error)
           end
         end
@@ -683,7 +689,7 @@ RSpec.describe ActiveSettings::Base do
           end
 
           it 'should load settings from env vars' do
-            expect(settings.to_hash).to eq({
+            expect(instance.to_hash).to eq({
               bool_true: false,
               bool_false: false,
               string: 'foo',
@@ -731,7 +737,7 @@ RSpec.describe ActiveSettings::Base do
           end
 
           it 'should load settings from env vars' do
-            expect(settings.to_hash).to eq({
+            expect(instance.to_hash).to eq({
               bool_true: true,
               bool_false: false,
               string: 'foo',
@@ -780,7 +786,7 @@ RSpec.describe ActiveSettings::Base do
         end
 
         it 'should load settings from env vars' do
-          expect(settings.to_hash).to eq({
+          expect(instance.to_hash).to eq({
             bool_true: true,
             bool_false: false,
             string: 'foo',
@@ -829,7 +835,7 @@ RSpec.describe ActiveSettings::Base do
         end
 
         it 'should load settings from env vars' do
-          expect(settings.to_hash).to eq({
+          expect(instance.to_hash).to eq({
             bool_true: true,
             bool_false: false,
             string: 'foo',
@@ -879,7 +885,7 @@ RSpec.describe ActiveSettings::Base do
         end
 
         it 'should load settings from env vars' do
-          expect(settings.to_hash).to eq({
+          expect(instance.to_hash).to eq({
             bool_true: true,
             bool_false: false,
             string: 'foo',
@@ -928,7 +934,7 @@ RSpec.describe ActiveSettings::Base do
 
         it 'should raise error' do
           expect {
-            settings.to_hash
+            instance.to_hash
           }.to raise_error(ActiveSettings::Error::EnvPrefixNotDefinedError)
         end
       end
@@ -944,9 +950,11 @@ RSpec.describe ActiveSettings::Base do
         end
       end
 
+      let(:instance) { settings.instance }
+
       describe '#to_hash' do
         it 'should return config as hash' do
-          expect(settings.to_hash).to eq({
+          expect(instance.to_hash).to eq({
             bool_true: true,
             bool_false: false,
             string: 'foo',
@@ -995,7 +1003,7 @@ RSpec.describe ActiveSettings::Base do
         end
 
         it 'should load settings from env vars' do
-          expect(settings.to_hash).to eq({
+          expect(instance.to_hash).to eq({
             bool_true: true,
             bool_false: false,
             string: 'foo',
@@ -1055,9 +1063,11 @@ RSpec.describe ActiveSettings::Base do
         end
       end
 
+      let(:instance) { settings.instance }
+
       describe '#to_hash' do
         it 'should return config as hash' do
-          expect(settings.to_hash).to eq({
+          expect(instance.to_hash).to eq({
             bool_true: false,
             bool_false: false,
             string: 'foo',
@@ -1106,7 +1116,7 @@ RSpec.describe ActiveSettings::Base do
         end
 
         it 'should load settings from env vars' do
-          expect(settings.to_hash).to eq({
+          expect(instance.to_hash).to eq({
             bool_true: false,
             bool_false: false,
             string: 'foo',
@@ -1169,9 +1179,11 @@ RSpec.describe ActiveSettings::Base do
       end
     end
 
+    let(:instance) { settings.instance }
+
     describe '#to_hash' do
       it 'should return config as hash' do
-        expect(settings.to_hash).to eq({
+        expect(instance.to_hash).to eq({
           bool_true: false,
           bool_false: false,
           string: 'foo',
