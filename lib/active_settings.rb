@@ -3,13 +3,13 @@
 require 'erb'
 require 'json'
 require 'yaml'
-require 'ostruct'
 require 'singleton'
 
 require 'deep_merge/core'
 require 'dry-schema'
 require 'active_support/core_ext/module/attribute_accessors'
 require 'active_support/core_ext/module/delegation'
+require 'hashie'
 
 require 'zeitwerk'
 loader = Zeitwerk::Loader.for_gem
@@ -42,17 +42,15 @@ module ActiveSettings
     end
 
     # Recursively converts Hashes to Options (including Hashes inside Arrays)
-    # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
     def from_hash(hash)
       settings = ActiveSettings::Config.new
 
       hash.each do |key, value|
-        key = key.to_s if !key.respond_to?(:to_sym) && key.respond_to?(:to_s)
-
         new_val =
           case value
           when Hash
-            value['type'] == 'hash' ? value['contents'] : from_hash(value)
+            from_hash(value)
           when Array
             value.collect { |e| e.instance_of?(Hash) ? from_hash(e) : e }
           else
@@ -64,7 +62,7 @@ module ActiveSettings
 
       settings
     end
-    # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
 
     def deep_merge_hash!(current, other)
       options = {
@@ -135,7 +133,7 @@ module ActiveSettings
         result[k] =
           if v.instance_of?(ActiveSettings::Config)
             traverse_config(v)
-          elsif v.instance_of?(Array)
+          elsif v.instance_of?(Hashie::Array)
             traverse_array(v)
           elsif v.instance_of?(Proc)
             v.call
@@ -151,7 +149,7 @@ module ActiveSettings
       array.map do |value|
         if value.instance_of?(ActiveSettings::Config)
           traverse_config(value)
-        elsif value.instance_of?(Array)
+        elsif value.instance_of?(Hashie::Array)
           traverse_array(value)
         elsif value.instance_of?(Proc)
           value.call
@@ -165,7 +163,7 @@ module ActiveSettings
       hash.each_value do |v|
         if v.instance_of?(ActiveSettings::Config)
           v.freeze
-        elsif v.instance_of?(Array)
+        elsif v.instance_of?(Hashie::Array)
           freeze_array(v)
         end
       end
@@ -175,7 +173,7 @@ module ActiveSettings
       array.map do |value|
         if value.instance_of?(ActiveSettings::Config)
           value.freeze
-        elsif value.instance_of?(Array)
+        elsif value.instance_of?(Hashie::Array)
           freeze_array(value)
         end
       end

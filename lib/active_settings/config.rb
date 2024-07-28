@@ -4,14 +4,8 @@
 # See: https://github.com/rubyconfig/config/blob/master/lib/config/options.rb
 
 module ActiveSettings
-  class Config < OpenStruct
-
-    delegate :each, :each_key, :each_value, :collect, :keys, :empty?, to: :marshal_dump
-
-
-    def key?(key)
-      self[key] ? true : false
-    end
+  class Config < Hashie::Mash
+    include Hashie::Extensions::Mash::SymbolizeKeys
 
 
     def fetch(key, default = nil)
@@ -41,7 +35,7 @@ module ActiveSettings
       current = to_hash
       other = other.dup
       ActiveSettings.deep_merge_hash!(current, other)
-      marshal_load(ActiveSettings.from_hash(current).marshal_dump)
+      deep_update(ActiveSettings.from_hash(current))
       self
     end
 

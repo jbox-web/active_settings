@@ -1199,9 +1199,9 @@ RSpec.describe ActiveSettings::Base do
           hash = {}
           %w[private public].each do |prefix|
             hash["#{prefix}_documents"] = {}
-            hash["#{prefix}_documents"]['path'] = "/documents/#{prefix}"
-            hash["#{prefix}_documents"]['size'] = -> { "size_of_#{prefix}" }
-            hash["#{prefix}_documents"]['test'] = [-> { "lambda2" }, -> { "lambda1" }]
+            hash["#{prefix}_documents"]['path']  = "/documents/#{prefix}"
+            hash["#{prefix}_documents"]['space'] = -> { "size_of_#{prefix}" }
+            hash["#{prefix}_documents"]['test']  = [-> { "lambda2" }, -> { "lambda1" }]
           end
           merge!(hash)
         end
@@ -1224,7 +1224,7 @@ RSpec.describe ActiveSettings::Base do
           },
           private_documents: {
             path: '/documents/private',
-            size: 'size_of_private',
+            space: 'size_of_private',
             test: [
               'lambda2',
               'lambda1',
@@ -1232,7 +1232,7 @@ RSpec.describe ActiveSettings::Base do
           },
           public_documents: {
             path: '/documents/public',
-            size: 'size_of_public',
+            space: 'size_of_public',
             test: [
               'lambda2',
               'lambda1',
