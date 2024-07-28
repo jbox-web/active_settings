@@ -31,6 +31,7 @@ module ActiveSettings
   mattr_accessor :overwrite_arrays,      default: true
   mattr_accessor :keep_array_duplicates, default: true
 
+  # rubocop:disable Metrics/ClassLength
   class << self
     def to_hash(config)
       traverse_config(config)
@@ -161,7 +162,7 @@ module ActiveSettings
     end
 
     def freeze_config(hash)
-      hash.each do |k, v|
+      hash.each_value do |v|
         if v.instance_of?(ActiveSettings::Config)
           v.freeze
         elsif v.instance_of?(Array)
@@ -194,5 +195,6 @@ module ActiveSettings
     # rubocop:enable Style/RescueModifier
 
   end
+  # rubocop:enable Metrics/ClassLength
 end
 # rubocop:enable Metrics/ModuleLength

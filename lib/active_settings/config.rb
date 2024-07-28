@@ -52,6 +52,7 @@ module ActiveSettings
     end
 
 
+    # rubocop:disable Style/SoleNestedConditional
     def method_missing(method_name, *args)
       return super if method_name == :respond_to_missing?
 
@@ -61,6 +62,7 @@ module ActiveSettings
 
       super
     end
+    # rubocop:enable Style/SoleNestedConditional
 
 
     def respond_to_missing?(method_name, include_private = false)

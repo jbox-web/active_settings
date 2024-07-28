@@ -55,12 +55,14 @@ module ActiveSettings
     end
 
 
+    # rubocop:disable Style/EmptyMethod
     def before_initialize!
     end
 
 
     def after_initialize!
     end
+    # rubocop:enable Style/EmptyMethod
 
   end
 end
