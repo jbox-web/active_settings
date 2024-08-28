@@ -281,6 +281,44 @@ RSpec.describe ActiveSettings::Base do
       end
     end
 
+    describe '#to_h' do
+      it 'should return config as hash' do
+        expect(instance.to_h).to eq({
+          bool_true: true,
+          bool_false: false,
+          string: 'foo',
+          integer: 1,
+          float: 1.0,
+          foo: 'bar',
+          nested: {
+            foo: 'bar'
+          },
+          deep: {
+            nested: {
+              warn_threshold: 100,
+            }
+          },
+          ary: [
+            'foo',
+            'bar'
+          ],
+          ary_of_hash: [
+            { foo: 'bar' },
+            { baz: 'bar' },
+          ],
+          ary_of_ary: [
+            ['foo', 'bar'],
+            ['baz', 'bar'],
+          ],
+          ary_of_mix: [
+            ['foo', 'bar'],
+            { foo: 'bar' },
+          ],
+          embedded_ruby: 6
+        })
+      end
+    end
+
     describe '#to_json' do
       it 'should return config as json' do
         expect(instance.to_json).to eq '{"bool_true":true,"bool_false":false,"string":"foo","integer":1,"float":1.0,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"baz":"bar"}],"ary_of_ary":[["foo","bar"],["baz","bar"]],"ary_of_mix":[["foo","bar"],{"foo":"bar"}],"embedded_ruby":6}'
