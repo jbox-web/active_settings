@@ -72,7 +72,7 @@ module ActiveSettings
         knockout_prefix:       ActiveSettings.knockout_prefix,
         overwrite_arrays:      ActiveSettings.overwrite_arrays,
         merge_nil_values:      ActiveSettings.merge_nil_values,
-        keep_array_duplicates: ActiveSettings.keep_array_duplicates
+        keep_array_duplicates: ActiveSettings.keep_array_duplicates,
       }
       DeepMerge.deep_merge!(other, current, options)
     end

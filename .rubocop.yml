@@ -9,13 +9,32 @@ AllCops:
   TargetRubyVersion: 3.0
   Exclude:
     - bin/*
-    - spec/**/*
 
 Gemspec/RequireMFA:
   Enabled: false
 
+#########
+# STYLE #
+#########
+
 Style/Documentation:
   Enabled: false
+
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/WordArray:
+  EnforcedStyle: brackets
+
+Style/BlockDelimiters:
+  AllowedPatterns: ['expect']
+
+##########
+# LAYOUT #
+##########
 
 Layout/EmptyLines:
   Enabled: false
@@ -35,3 +54,23 @@ Layout/EmptyLinesAroundModuleBody:
 Layout/HashAlignment:
   EnforcedColonStyle: table
   EnforcedHashRocketStyle: table
+  Exclude:
+    - spec/active_settings/base_spec.rb
+
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
+
+#########
+# RSPEC #
+#########
+
+RSpec/NestedGroups:
+  Exclude:
+    - spec/active_settings/base_spec.rb
+
+RSpec/ExampleLength:
+  Exclude:
+    - spec/active_settings/base_spec.rb
+
+RSpec/NotToNot:
+  EnforcedStyle: to_not

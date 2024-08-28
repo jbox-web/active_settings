@@ -1,16 +1,15 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe ActiveSettings::Base do
 
   context 'when source file is nil' do
-    let(:settings) do
-      Class.new(ActiveSettings::Base) do
-      end
-    end
+    let(:settings) { Class.new(described_class) }
 
     let(:instance) { settings.instance }
 
-    it 'should raise an error' do
+    it 'raises an error' do
       expect {
         instance
       }.to raise_error(ActiveSettings::Error::SourceFileNotDefinedError)
@@ -27,7 +26,7 @@ RSpec.describe ActiveSettings::Base do
     let(:instance) { settings.instance }
 
     describe '#source' do
-      it 'should delegate to class method' do
+      it 'delegates to class method' do
         expect(instance.source).to eq get_fixture_path('settings.yml')
       end
     end
@@ -42,82 +41,82 @@ RSpec.describe ActiveSettings::Base do
 
       let(:instance) { settings.instance }
 
-      it 'should delegate to class method' do
+      it 'delegates to class method' do
         expect(instance.namespace).to eq 'foo'
       end
     end
 
     describe 'settings accesors' do
-      it 'should access settings by method' do
+      it 'accesses settings by method' do
         expect(instance.foo).to eq 'bar'
       end
 
-      it 'should access nested settings by method' do
+      it 'accesses nested settings by method' do
         expect(instance.nested.foo).to eq 'bar'
       end
 
-      it 'should access settings by string key' do
+      it 'accesses settings by string key' do
         expect(instance['foo']).to eq 'bar'
       end
 
-      it 'should access nested settings by string key' do
+      it 'accesses nested settings by string key' do
         expect(instance['nested']['foo']).to eq 'bar'
       end
 
-      it 'should access settings by symbol key' do
+      it 'accesses settings by symbol key' do
         expect(instance[:foo]).to eq 'bar'
       end
 
-      it 'should access nested settings by symbol key' do
+      it 'accesses nested settings by symbol key' do
         expect(instance[:nested][:foo]).to eq 'bar'
       end
     end
 
     describe '#key?' do
       context 'when string key exist' do
-        it 'should return true' do
+        it 'returns true' do
           expect(instance.key?('foo')).to be true
         end
       end
 
       context 'when string key dont exist' do
-        it 'should return false' do
+        it 'returns false' do
           expect(instance.key?('bar')).to be false
         end
       end
 
       context 'when symbol key exist' do
-        it 'should return true' do
+        it 'returns true' do
           expect(instance.key?(:foo)).to be true
         end
       end
 
       context 'when symbol key dont exist' do
-        it 'should return false' do
+        it 'returns false' do
           expect(instance.key?(:bar)).to be false
         end
       end
 
       context 'when nested string key exist' do
-        it 'should return true' do
+        it 'returns true' do
           expect(instance.nested.key?('foo')).to be true
         end
       end
 
       context 'when nested string key dont exist' do
-        it 'should return false' do
+        it 'returns false' do
           expect(instance.nested.key?('bar')).to be false
         end
       end
 
       context 'when nested symbol key exist' do
-        it 'should return true' do
+        it 'returns true' do
           expect(instance.nested.key?(:foo)).to be true
         end
       end
 
       context 'when nested symbol key dont exist' do
-        it 'should return false' do
+        it 'returns false' do
           expect(instance.nested.key?(:bar)).to be false
         end
       end
@@ -125,94 +124,96 @@ RSpec.describe ActiveSettings::Base do
 
     describe '#fetch' do
       context 'when string key exist' do
-        it 'should return value' do
+        it 'returns value' do
           expect(instance.fetch('foo')).to eq 'bar'
         end
       end
 
       context 'when string key dont exist' do
-        it 'should return nil' do
-          expect(instance.fetch('bar')).to be nil
+        it 'returns nil' do
+          expect(instance.fetch('bar')).to be_nil
         end
       end
 
       context 'when symbol key exist' do
-        it 'should return value' do
+        it 'returns value' do
           expect(instance.fetch(:foo)).to eq 'bar'
         end
       end
 
       context 'when symbol key dont exist' do
-        it 'should return nil' do
-          expect(instance.fetch(:bar)).to be nil
+        it 'returns nil' do
+          expect(instance.fetch(:bar)).to be_nil
         end
       end
 
       context 'when nested string key exist' do
-        it 'should return value' do
+        it 'returns value' do
           expect(instance.nested.fetch('foo')).to eq 'bar'
         end
       end
 
       context 'when nested string key dont exist' do
-        it 'should return nil' do
-          expect(instance.nested.fetch('bar')).to be nil
+        it 'returns nil' do
+          expect(instance.nested.fetch('bar')).to be_nil
         end
       end
 
       context 'when nested symbol key exist' do
-        it 'should return value' do
+        it 'returns value' do
           expect(instance.nested.fetch(:foo)).to eq 'bar'
         end
       end
 
       context 'when nested symbol key dont exist' do
-        it 'should return nil' do
-          expect(instance.nested.fetch(:bar)).to be nil
+        it 'returns nil' do
+          expect(instance.nested.fetch(:bar)).to be_nil
         end
       end
 
       context 'when key dont exist and a default value is given' do
-        it 'should return default value' do
+        it 'returns default value' do
           expect(instance.fetch(:path, 'foo')).to eq 'foo'
         end
       end
 
       context 'when key dont exist and a block is given' do
-        it 'should yield block' do
-          expect(instance.fetch(:path){ 'foo' }).to eq 'foo'
+        # rubocop:disable Style/RedundantFetchBlock
+        it 'yields block' do
+          expect(instance.fetch(:path) { 'foo' }).to eq 'foo'
         end
+        # rubocop:enable Style/RedundantFetchBlock
       end
     end
 
     describe '#dig' do
       context 'when nested string key exist' do
-        it 'should return value' do
+        it 'returns value' do
           expect(instance.dig('nested', 'foo')).to eq 'bar'
         end
       end
 
       context 'when nested string key dont exist' do
-        it 'should return nil' do
-          expect(instance.dig('nested', 'bar')).to be nil
+        it 'returns nil' do
+          expect(instance.dig('nested', 'bar')).to be_nil
         end
       end
 
       context 'when nested symbol key exist' do
-        it 'should return value' do
+        it 'returns value' do
           expect(instance.dig(:nested, :foo)).to eq 'bar'
         end
       end
 
       context 'when nested symbol key dont exist' do
-        it 'should return nil' do
-          expect(instance.dig(:nested, :bar)).to be nil
+        it 'returns nil' do
+          expect(instance.dig(:nested, :bar)).to be_nil
         end
       end
     end
 
     describe '#each' do
-      it 'should iterate on Settings' do
+      it 'iterates on Settings' do
         expect(instance.each.to_h).to eq({
           bool_true: true,
           bool_false: false,
@@ -238,13 +239,13 @@ RSpec.describe ActiveSettings::Base do
             ['foo', 'bar'],
             ActiveSettings::Config.new(foo: 'bar'),
           ],
-          embedded_ruby: 6
+          embedded_ruby: 6,
         })
       end
     end
 
     describe '#to_hash' do
-      it 'should return config as hash' do
+      it 'returns config as hash' do
         expect(instance.to_hash).to eq({
           bool_true: true,
           bool_false: false,
@@ -253,16 +254,16 @@ RSpec.describe ActiveSettings::Base do
           float: 1.0,
           foo: 'bar',
           nested: {
-            foo: 'bar'
+            foo: 'bar',
           },
           deep: {
             nested: {
               warn_threshold: 100,
-            }
+            },
           },
           ary: [
             'foo',
-            'bar'
+            'bar',
           ],
           ary_of_hash: [
             { foo: 'bar' },
@@ -276,13 +277,13 @@ RSpec.describe ActiveSettings::Base do
             ['foo', 'bar'],
             { foo: 'bar' },
           ],
-          embedded_ruby: 6
+          embedded_ruby: 6,
         })
       end
     end
 
     describe '#to_h' do
-      it 'should return config as hash' do
+      it 'returns config as hash' do
         expect(instance.to_h).to eq({
           bool_true: true,
           bool_false: false,
@@ -291,16 +292,16 @@ RSpec.describe ActiveSettings::Base do
           float: 1.0,
           foo: 'bar',
           nested: {
-            foo: 'bar'
+            foo: 'bar',
           },
           deep: {
             nested: {
               warn_threshold: 100,
-            }
+            },
           },
           ary: [
             'foo',
-            'bar'
+            'bar',
           ],
           ary_of_hash: [
             { foo: 'bar' },
@@ -314,34 +315,37 @@ RSpec.describe ActiveSettings::Base do
             ['foo', 'bar'],
             { foo: 'bar' },
           ],
-          embedded_ruby: 6
+          embedded_ruby: 6,
         })
       end
     end
 
     describe '#to_json' do
-      it 'should return config as json' do
-        expect(instance.to_json).to eq '{"bool_true":true,"bool_false":false,"string":"foo","integer":1,"float":1.0,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"baz":"bar"}],"ary_of_ary":[["foo","bar"],["baz","bar"]],"ary_of_mix":[["foo","bar"],{"foo":"bar"}],"embedded_ruby":6}'
-        expect(instance.send(:to_json)).to eq '{"bool_true":true,"bool_false":false,"string":"foo","integer":1,"float":1.0,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"baz":"bar"}],"ary_of_ary":[["foo","bar"],["baz","bar"]],"ary_of_mix":[["foo","bar"],{"foo":"bar"}],"embedded_ruby":6}'
+      # rubocop:disable Layout/LineLength
+      let(:json) { '{"bool_true":true,"bool_false":false,"string":"foo","integer":1,"float":1.0,"foo":"bar","nested":{"foo":"bar"},"deep":{"nested":{"warn_threshold":100}},"ary":["foo","bar"],"ary_of_hash":[{"foo":"bar"},{"baz":"bar"}],"ary_of_ary":[["foo","bar"],["baz","bar"]],"ary_of_mix":[["foo","bar"],{"foo":"bar"}],"embedded_ruby":6}' }
+
+      it 'returns config as json' do
+        expect(instance.to_json).to eq json
       end
+      # rubocop:enable Layout/LineLength
     end
 
     describe '.fail_on_missing' do
       context 'when fail_on_missing is false' do
-        it 'should not raise error when accessing missing key' do
+        it 'does not raise error when accessing missing key' do
           expect {
             instance.path
           }.to_not raise_error
         end
 
-        it 'should not raise error when accessing missing nested key' do
+        it 'does not raise error when accessing missing nested key' do
           expect {
             instance.nested.path
           }.to_not raise_error
         end
 
-        it 'should return nil when accessing missing nested key' do
-          expect(instance.nested.path).to be nil
+        it 'returns nil when accessing missing nested key' do
+          expect(instance.nested.path).to be_nil
         end
       end
 
@@ -349,13 +353,13 @@ RSpec.describe ActiveSettings::Base do
         before { ActiveSettings.fail_on_missing = true }
         after  { ActiveSettings.fail_on_missing = false }
 
-        it 'should raise error when accessing missing key' do
+        it 'raises error when accessing missing key' do
           expect {
             instance.path
           }.to raise_error(KeyError).with_message('key not found: :path')
         end
 
-        it 'should raise error when accessing nested missing key' do
+        it 'raises error when accessing nested missing key' do
           expect {
             instance.nested.path
           }.to raise_error(KeyError).with_message('key not found: :path')
@@ -364,7 +368,7 @@ RSpec.describe ActiveSettings::Base do
     end
 
     describe '#merge' do
-      it 'should merge hash' do
+      it 'merges hash' do
         expect(instance.merge!(baz: 'bar').to_hash).to eq({
           bool_true: true,
           bool_false: false,
@@ -379,7 +383,7 @@ RSpec.describe ActiveSettings::Base do
           deep: {
             nested: {
               warn_threshold: 100,
-            }
+            },
           },
           ary: [
             'foo',
@@ -397,11 +401,11 @@ RSpec.describe ActiveSettings::Base do
             ['foo', 'bar'],
             { foo: 'bar' },
           ],
-          embedded_ruby: 6
+          embedded_ruby: 6,
         })
       end
 
-      it 'should merge nested hash' do
+      it 'merges nested hash' do
         expect(instance.merge!(nested: { baz: 'bar' }).to_hash).to eq({
           bool_true: true,
           bool_false: false,
@@ -416,7 +420,7 @@ RSpec.describe ActiveSettings::Base do
           deep: {
             nested: {
               warn_threshold: 100,
-            }
+            },
           },
           ary: [
             'foo',
@@ -434,12 +438,12 @@ RSpec.describe ActiveSettings::Base do
             ['foo', 'bar'],
             { foo: 'bar' },
           ],
-          embedded_ruby: 6
+          embedded_ruby: 6,
         })
       end
 
       context 'when overwrite_arrays is true (default)' do
-        it 'should merge/overwrite nested ary' do
+        it 'merge/overwrites nested ary' do
           expect(instance.merge!(ary: ['baz']).to_hash).to eq({
             bool_true: true,
             bool_false: false,
@@ -453,7 +457,7 @@ RSpec.describe ActiveSettings::Base do
             deep: {
               nested: {
                 warn_threshold: 100,
-              }
+              },
             },
             ary: [
               'baz',
@@ -470,11 +474,11 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               { foo: 'bar' },
             ],
-            embedded_ruby: 6
+            embedded_ruby: 6,
           })
         end
 
-        it 'should merge/overwrite nested ary of hash' do
+        it 'merge/overwrites nested ary of hash' do
           expect(instance.merge!(ary_of_hash: [{ foo: 'bar' }]).to_hash).to eq({
             bool_true: true,
             bool_false: false,
@@ -488,7 +492,7 @@ RSpec.describe ActiveSettings::Base do
             deep: {
               nested: {
                 warn_threshold: 100,
-              }
+              },
             },
             ary: [
               'foo',
@@ -505,11 +509,11 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               { foo: 'bar' },
             ],
-            embedded_ruby: 6
+            embedded_ruby: 6,
           })
         end
 
-        it 'should merge/overwrite nested ary of ary' do
+        it 'merge/overwrites nested ary of ary' do
           expect(instance.merge!(ary_of_ary: [['foo', 'bar']]).to_hash).to eq({
             bool_true: true,
             bool_false: false,
@@ -523,7 +527,7 @@ RSpec.describe ActiveSettings::Base do
             deep: {
               nested: {
                 warn_threshold: 100,
-              }
+              },
             },
             ary: [
               'foo',
@@ -540,7 +544,7 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               { foo: 'bar' },
             ],
-            embedded_ruby: 6
+            embedded_ruby: 6,
           })
         end
       end
@@ -549,7 +553,7 @@ RSpec.describe ActiveSettings::Base do
         before { ActiveSettings.overwrite_arrays = false }
         after  { ActiveSettings.overwrite_arrays = true }
 
-        it 'should merge/extend nested ary' do
+        it 'merge/extends nested ary' do
           expect(instance.merge!(ary: ['baz']).to_hash).to eq({
             bool_true: true,
             bool_false: false,
@@ -563,7 +567,7 @@ RSpec.describe ActiveSettings::Base do
             deep: {
               nested: {
                 warn_threshold: 100,
-              }
+              },
             },
             ary: [
               'foo',
@@ -582,11 +586,11 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               { foo: 'bar' },
             ],
-            embedded_ruby: 6
+            embedded_ruby: 6,
           })
         end
 
-        it 'should merge/extend nested ary of hash' do
+        it 'merge/extends nested ary of hash' do
           expect(instance.merge!(ary_of_hash: [{ foo: 'baz' }]).to_hash).to eq({
             bool_true: true,
             bool_false: false,
@@ -600,7 +604,7 @@ RSpec.describe ActiveSettings::Base do
             deep: {
               nested: {
                 warn_threshold: 100,
-              }
+              },
             },
             ary: [
               'foo',
@@ -619,11 +623,11 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               { foo: 'bar' },
             ],
-            embedded_ruby: 6
+            embedded_ruby: 6,
           })
         end
 
-        it 'should merge/extend nested ary of ary' do
+        it 'merge/extends nested ary of ary' do
           expect(instance.merge!(ary_of_ary: [['foo', 'baz']]).to_hash).to eq({
             bool_true: true,
             bool_false: false,
@@ -637,7 +641,7 @@ RSpec.describe ActiveSettings::Base do
             deep: {
               nested: {
                 warn_threshold: 100,
-              }
+              },
             },
             ary: [
               'foo',
@@ -656,7 +660,7 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               { foo: 'bar' },
             ],
-            embedded_ruby: 6
+            embedded_ruby: 6,
           })
         end
       end
@@ -664,9 +668,9 @@ RSpec.describe ActiveSettings::Base do
 
     describe '#validate!' do
       context 'when schema is not defined' do
-        it 'should do nothing' do
+        it 'does nothing' do
           expect {
-           instance.validate!
+            instance.validate!
           }.to_not raise_error
         end
       end
@@ -696,17 +700,17 @@ RSpec.describe ActiveSettings::Base do
         end
 
         context 'when schema is valid' do
-          it 'should validate settings' do
+          it 'validates settings' do
             expect {
-             with_valid_schema.instance.validate!
+              with_valid_schema.instance.validate!
             }.to_not raise_error
           end
         end
 
         context 'when schema is invalid' do
-          it 'should validate settings' do
+          it 'validates settings' do
             expect {
-             with_invalid_schema.instance.validate!
+              with_invalid_schema.instance.validate!
             }.to raise_error(ActiveSettings::Validation::Error)
           end
         end
@@ -725,7 +729,7 @@ RSpec.describe ActiveSettings::Base do
       end
 
       def deep_config_validation(hash)
-        hash.each do |k, v|
+        hash.each_value do |v|
           if v.instance_of?(ActiveSettings::Config)
             expect(v.frozen?).to be true
             deep_config_validation(v)
@@ -755,7 +759,7 @@ RSpec.describe ActiveSettings::Base do
             ENV.delete('SETTINGS.BOOL_TRUE')
           end
 
-          it 'should load settings from env vars' do
+          it 'loads settings from env vars' do
             expect(instance.to_hash).to eq({
               bool_true: false,
               bool_false: false,
@@ -769,11 +773,11 @@ RSpec.describe ActiveSettings::Base do
               deep: {
                 nested: {
                   warn_threshold: 100,
-                }
+                },
               },
               ary: [
                 'foo',
-                'bar'
+                'bar',
               ],
               ary_of_hash: [
                 { foo: 'bar' },
@@ -787,7 +791,7 @@ RSpec.describe ActiveSettings::Base do
                 ['foo', 'bar'],
                 { foo: 'bar' },
               ],
-              embedded_ruby: 6
+              embedded_ruby: 6,
             })
           end
         end
@@ -803,7 +807,7 @@ RSpec.describe ActiveSettings::Base do
             ENV.delete('SETTINGS.BOOL_TRUE')
           end
 
-          it 'should load settings from env vars' do
+          it 'loads settings from env vars' do
             expect(instance.to_hash).to eq({
               bool_true: true,
               bool_false: false,
@@ -817,11 +821,11 @@ RSpec.describe ActiveSettings::Base do
               deep: {
                 nested: {
                   warn_threshold: 100,
-                }
+                },
               },
               ary: [
                 'foo',
-                'bar'
+                'bar',
               ],
               ary_of_hash: [
                 { foo: 'bar' },
@@ -835,7 +839,7 @@ RSpec.describe ActiveSettings::Base do
                 ['foo', 'bar'],
                 { foo: 'bar' },
               ],
-              embedded_ruby: 6
+              embedded_ruby: 6,
             })
           end
         end
@@ -852,7 +856,7 @@ RSpec.describe ActiveSettings::Base do
           ENV.delete('SETTINGS.NESTED.BAZ')
         end
 
-        it 'should load settings from env vars' do
+        it 'loads settings from env vars' do
           expect(instance.to_hash).to eq({
             bool_true: true,
             bool_false: false,
@@ -867,11 +871,11 @@ RSpec.describe ActiveSettings::Base do
             deep: {
               nested: {
                 warn_threshold: 100,
-              }
+              },
             },
             ary: [
               'foo',
-              'bar'
+              'bar',
             ],
             ary_of_hash: [
               { foo: 'bar' },
@@ -885,7 +889,7 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               { foo: 'bar' },
             ],
-            embedded_ruby: 6
+            embedded_ruby: 6,
           })
         end
       end
@@ -901,7 +905,7 @@ RSpec.describe ActiveSettings::Base do
           ENV.delete('SETTINGS.DEEP.NESTED.BAZ')
         end
 
-        it 'should load settings from env vars' do
+        it 'loads settings from env vars' do
           expect(instance.to_hash).to eq({
             bool_true: true,
             bool_false: false,
@@ -916,11 +920,11 @@ RSpec.describe ActiveSettings::Base do
               nested: {
                 warn_threshold: 100,
                 baz: 'bar',
-              }
+              },
             },
             ary: [
               'foo',
-              'bar'
+              'bar',
             ],
             ary_of_hash: [
               { foo: 'bar' },
@@ -934,12 +938,13 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               { foo: 'bar' },
             ],
-            embedded_ruby: 6
+            embedded_ruby: 6,
           })
         end
       end
 
       context 'when ENV is empty' do
+        # rubocop:disable RSpec/InstanceVariable
         before do
           ActiveSettings.use_env = true
           @old_env = ENV.to_hash
@@ -950,8 +955,9 @@ RSpec.describe ActiveSettings::Base do
           ActiveSettings.use_env = false
           ENV.update(@old_env)
         end
+        # rubocop:enable RSpec/InstanceVariable
 
-        it 'should load settings from env vars' do
+        it 'loads settings from env vars' do
           expect(instance.to_hash).to eq({
             bool_true: true,
             bool_false: false,
@@ -965,11 +971,11 @@ RSpec.describe ActiveSettings::Base do
             deep: {
               nested: {
                 warn_threshold: 100,
-              }
+              },
             },
             ary: [
               'foo',
-              'bar'
+              'bar',
             ],
             ary_of_hash: [
               { foo: 'bar' },
@@ -983,7 +989,7 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               { foo: 'bar' },
             ],
-            embedded_ruby: 6
+            embedded_ruby: 6,
           })
         end
       end
@@ -999,7 +1005,7 @@ RSpec.describe ActiveSettings::Base do
           ActiveSettings.env_prefix = 'SETTINGS'
         end
 
-        it 'should raise error' do
+        it 'raises error' do
           expect {
             instance.to_hash
           }.to raise_error(ActiveSettings::Error::EnvPrefixNotDefinedError)
@@ -1020,7 +1026,7 @@ RSpec.describe ActiveSettings::Base do
       let(:instance) { settings.instance }
 
       describe '#to_hash' do
-        it 'should return config as hash' do
+        it 'returns config as hash' do
           expect(instance.to_hash).to eq({
             bool_true: true,
             bool_false: false,
@@ -1029,17 +1035,17 @@ RSpec.describe ActiveSettings::Base do
             float: 1.0,
             foo: 'baz',
             nested: {
-              foo: 'bar'
+              foo: 'bar',
             },
             deep: {
               nested: {
                 warn_threshold: 50,
-                warn_account: 'foo'
-              }
+                warn_account: 'foo',
+              },
             },
             ary: [
               'foo',
-              'bar'
+              'bar',
             ],
             ary_of_hash: [
               { foo: 'bar' },
@@ -1053,7 +1059,7 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               { foo: 'bar' },
             ],
-            embedded_ruby: 6
+            embedded_ruby: 6,
           })
         end
       end
@@ -1069,7 +1075,7 @@ RSpec.describe ActiveSettings::Base do
           ENV.delete('SETTINGS.DEEP.NESTED.WARN_ACCOUNT')
         end
 
-        it 'should load settings from env vars' do
+        it 'loads settings from env vars' do
           expect(instance.to_hash).to eq({
             bool_true: true,
             bool_false: false,
@@ -1083,12 +1089,12 @@ RSpec.describe ActiveSettings::Base do
             deep: {
               nested: {
                 warn_threshold: 50,
-                warn_account: 'bar'
-              }
+                warn_account: 'bar',
+              },
             },
             ary: [
               'foo',
-              'bar'
+              'bar',
             ],
             ary_of_hash: [
               { foo: 'bar' },
@@ -1102,7 +1108,7 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               { foo: 'bar' },
             ],
-            embedded_ruby: 6
+            embedded_ruby: 6,
           })
         end
       end
@@ -1133,7 +1139,7 @@ RSpec.describe ActiveSettings::Base do
       let(:instance) { settings.instance }
 
       describe '#to_hash' do
-        it 'should return config as hash' do
+        it 'returns config as hash' do
           expect(instance.to_hash).to eq({
             bool_true: false,
             bool_false: false,
@@ -1142,17 +1148,17 @@ RSpec.describe ActiveSettings::Base do
             float: 1.0,
             foo: 'bar',
             nested: {
-              foo: 'bar'
+              foo: 'bar',
             },
             deep: {
               nested: {
                 warn_threshold: 100,
                 warn_account: 'foo',
-              }
+              },
             },
             ary: [
               'foo',
-              'bar'
+              'bar',
             ],
             ary_of_hash: [
               { foo: 'bar' },
@@ -1166,7 +1172,7 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               { foo: 'bar' },
             ],
-            embedded_ruby: 6
+            embedded_ruby: 6,
           })
         end
       end
@@ -1182,7 +1188,7 @@ RSpec.describe ActiveSettings::Base do
           ENV.delete('SETTINGS.DEEP.NESTED.WARN_ACCOUNT')
         end
 
-        it 'should load settings from env vars' do
+        it 'loads settings from env vars' do
           expect(instance.to_hash).to eq({
             bool_true: false,
             bool_false: false,
@@ -1196,12 +1202,12 @@ RSpec.describe ActiveSettings::Base do
             deep: {
               nested: {
                 warn_threshold: 100,
-                warn_account: 'bar'
-              }
+                warn_account: 'bar',
+              },
             },
             ary: [
               'foo',
-              'bar'
+              'bar',
             ],
             ary_of_hash: [
               { foo: 'bar' },
@@ -1215,7 +1221,7 @@ RSpec.describe ActiveSettings::Base do
               ['foo', 'bar'],
               { foo: 'bar' },
             ],
-            embedded_ruby: 6
+            embedded_ruby: 6,
           })
         end
       end
@@ -1235,11 +1241,11 @@ RSpec.describe ActiveSettings::Base do
 
         def load_storage_config!
           hash = {}
-          %w[private public].each do |prefix|
+          ['private', 'public'].each do |prefix|
             hash["#{prefix}_documents"] = {}
             hash["#{prefix}_documents"]['path'] = "/documents/#{prefix}"
             hash["#{prefix}_documents"]['size'] = -> { "size_of_#{prefix}" }
-            hash["#{prefix}_documents"]['test'] = [-> { "lambda2" }, -> { "lambda1" }]
+            hash["#{prefix}_documents"]['test'] = [-> { 'lambda2' }, -> { 'lambda1' }]
           end
           merge!(hash)
         end
@@ -1249,7 +1255,7 @@ RSpec.describe ActiveSettings::Base do
     let(:instance) { settings.instance }
 
     describe '#to_hash' do
-      it 'should return config as hash' do
+      it 'returns config as hash' do
         expect(instance.to_hash).to eq({
           bool_true: false,
           bool_false: false,
@@ -1258,7 +1264,7 @@ RSpec.describe ActiveSettings::Base do
           float: 1.0,
           foo: 'bar',
           nested: {
-            foo: 'bar'
+            foo: 'bar',
           },
           private_documents: {
             path: '/documents/private',
@@ -1266,7 +1272,7 @@ RSpec.describe ActiveSettings::Base do
             test: [
               'lambda2',
               'lambda1',
-            ]
+            ],
           },
           public_documents: {
             path: '/documents/public',
@@ -1274,17 +1280,17 @@ RSpec.describe ActiveSettings::Base do
             test: [
               'lambda2',
               'lambda1',
-            ]
+            ],
           },
           deep: {
             nested: {
               warn_threshold: 100,
               warn_account: 'foo',
-            }
+            },
           },
           ary: [
             'foo',
-            'bar'
+            'bar',
           ],
           ary_of_hash: [
             { foo: 'bar' },
@@ -1298,7 +1304,7 @@ RSpec.describe ActiveSettings::Base do
             ['foo', 'bar'],
             { foo: 'bar' },
           ],
-          embedded_ruby: 6
+          embedded_ruby: 6,
         })
       end
     end
