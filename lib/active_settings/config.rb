@@ -4,7 +4,7 @@
 # See: https://github.com/rubyconfig/config/blob/master/lib/config/options.rb
 
 module ActiveSettings
-  class Config < OpenStruct
+  class Config < OpenStruct # rubocop:disable Style/OpenStructUse
 
     delegate :each, :each_key, :each_value, :collect, :keys, :empty?, to: :marshal_dump
 
@@ -29,7 +29,7 @@ module ActiveSettings
       ActiveSettings.to_hash(self)
     end
 
-    alias :to_h :to_hash
+    alias to_h to_hash
 
 
     def to_json(*args)

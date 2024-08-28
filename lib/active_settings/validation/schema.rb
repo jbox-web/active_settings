@@ -7,7 +7,7 @@ module ActiveSettings
       def schema(&block)
         return @schema if @schema
 
-        @schema = Dry::Schema.define(&block) if block_given?
+        @schema = Dry::Schema.define(&block) if block
       end
 
     end
