@@ -145,7 +145,6 @@ module ActiveSettings
       end
       result
     end
-    # rubocop:enable Metrics/MethodLength
 
     def traverse_array(array)
       array.map do |value|
@@ -160,6 +159,7 @@ module ActiveSettings
         end
       end
     end
+    # rubocop:enable Metrics/MethodLength
 
     def freeze_config(hash)
       hash.each_value do |v|

@@ -11,7 +11,8 @@ module ActiveSettings
 
         return if v_res.success?
 
-        raise ActiveSettings::Validation::Error, "ActiveSettings validation failed:\n\n#{ActiveSettings::Validation::Error.format(v_res, ActiveSettings.env_prefix)}"
+        message = ActiveSettings::Validation::Error.format(v_res, ActiveSettings.env_prefix)
+        raise ActiveSettings::Validation::Error, "ActiveSettings validation failed:\n\n#{message}"
       end
 
     end

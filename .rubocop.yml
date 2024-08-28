@@ -11,7 +11,7 @@ AllCops:
     - bin/*
     - spec/**/*
 
-Gemspec/AddRuntimeDependency:
+Gemspec/RequireMFA:
   Enabled: false
 
 Style/Documentation:
@@ -32,33 +32,6 @@ Layout/EmptyLinesAroundBlockBody:
 Layout/EmptyLinesAroundModuleBody:
   Enabled: false
 
-Layout/LineLength:
-  Enabled: false
-
-Metrics/MethodLength:
-  Max: 12
-
 Layout/HashAlignment:
   EnforcedColonStyle: table
   EnforcedHashRocketStyle: table
-
-Lint/RaiseException:
-  Enabled: true
-
-Lint/StructNewOverride:
-  Enabled: true
-
-Style/HashEachMethods:
-  Enabled: true
-
-Style/HashTransformKeys:
-  Enabled: true
-
-Style/HashTransformValues:
-  Enabled: true
-
-Gemspec/DevelopmentDependencies:
-  Enabled: false
-
-Gemspec/RequireMFA:
-  Enabled: false
