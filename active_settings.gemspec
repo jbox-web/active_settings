@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
 
   s.files = `git ls-files`.split("\n")
 
-  s.add_dependency 'activesupport', '>= 6.0'
+  s.add_dependency 'activesupport', '>= 7.0'
   s.add_dependency 'deep_merge',    '~> 1.2.1'
   s.add_dependency 'dry-schema',    '>= 1.2.0'
   s.add_dependency 'zeitwerk'
