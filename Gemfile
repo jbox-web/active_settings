@@ -4,7 +4,6 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'debug'
 gem 'guard-rspec'
 gem 'pry'
 gem 'rake'
@@ -14,3 +13,7 @@ gem 'rubocop-performance'
 gem 'rubocop-rake'
 gem 'rubocop-rspec'
 gem 'simplecov'
+
+platforms :mri do
+  gem 'debug'
+end
