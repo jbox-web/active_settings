@@ -1,19 +1,23 @@
 # frozen_string_literal: true
 
+# require ruby dependencies
 require 'erb'
 require 'json'
 require 'yaml'
 require 'ostruct'
 require 'singleton'
 
+# require external dependencies
 require 'deep_merge/core'
 require 'dry-schema'
 require 'active_support/core_ext/module/attribute_accessors'
 require 'active_support/core_ext/module/delegation'
-
 require 'zeitwerk'
-loader = Zeitwerk::Loader.for_gem
-loader.setup
+
+# load zeitwerk
+Zeitwerk::Loader.for_gem.tap do |loader| # rubocop:disable Style/SymbolProc
+  loader.setup
+end
 
 # rubocop:disable Metrics/ModuleLength
 module ActiveSettings
