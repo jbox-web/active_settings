@@ -18,12 +18,12 @@ Gem::Specification.new do |s|
     'bug_tracker_uri' => 'https://github.com/jbox-web/active_settings/issues',
   }
 
-  s.required_ruby_version = '>= 3.0.0'
+  s.required_ruby_version = '>= 3.1.0'
 
   s.files = Dir['README.md', 'CHANGELOG.md', 'LICENSE', 'lib/**/*.rb']
 
   s.add_dependency 'activesupport', '>= 7.0'
   s.add_dependency 'deep_merge',    '~> 1.2.1'
   s.add_dependency 'dry-schema',    '>= 1.2.0'
-  s.add_dependency 'zeitwerk'
+  s.add_dependency 'zeitwerk',      '~> 2.6.0'
 end
