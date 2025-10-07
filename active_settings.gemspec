@@ -26,5 +26,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'deep_merge',    '~> 1.2.1'
   s.add_dependency 'dry-schema',    '>= 1.2.0'
   s.add_dependency 'ostruct'
-  s.add_dependency 'zeitwerk', '~> 2.6.0'
+  s.add_dependency 'zeitwerk'
 end
