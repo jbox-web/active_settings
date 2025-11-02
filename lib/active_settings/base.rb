@@ -30,11 +30,11 @@ module ActiveSettings
       # load config from namespaced yaml file: settings.dev.yml
       ActiveSettings.deep_merge_hash!(config, load_namespace_file(file, namespace)) if namespace
 
-      # create settings object
-      super(ActiveSettings.from_hash(config))
-
       # run before initialize hook (to load env vars for example)
       before_initialize!
+
+      # create settings object
+      super(ActiveSettings.from_hash(config))
 
       # merge settings from env vars
       merge!(ActiveSettings.from_env(ENV))
