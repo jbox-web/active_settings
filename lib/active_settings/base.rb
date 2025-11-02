@@ -24,17 +24,25 @@ module ActiveSettings
     def initialize(file: self.class.source, namespace: self.class.namespace)
       raise ActiveSettings::Error::SourceFileNotDefinedError if file.nil?
 
+      # load config from yaml file: settings.yml
       config = load_yaml_file(file)
+
+      # load config from namespaced yaml file: settings.dev.yml
       ActiveSettings.deep_merge_hash!(config, load_namespace_file(file, namespace)) if namespace
 
+      # create settings object
       super(ActiveSettings.from_hash(config))
 
+      # run before initialize hook (to load env vars for example)
       before_initialize!
 
+      # merge settings from env vars
       merge!(ActiveSettings.from_env(ENV))
 
+      # yield to block for further customization
       yield if block_given?
 
+      # run after initialize hook (to create directories for example)
       after_initialize!
     end
 
