@@ -32,4 +32,5 @@ def get_fixture_path(name)
   File.expand_path("fixtures/#{name}", __dir__)
 end
 
+# Load our gem
 require 'active_settings'
