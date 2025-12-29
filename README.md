@@ -3,8 +3,8 @@
 [![GitHub license](https://img.shields.io/github/license/jbox-web/active_settings.svg)](https://github.com/jbox-web/active_settings/blob/master/LICENSE)
 [![GitHub release](https://img.shields.io/github/release/jbox-web/active_settings.svg)](https://github.com/jbox-web/active_settings/releases/latest)
 [![CI](https://github.com/jbox-web/active_settings/workflows/CI/badge.svg)](https://github.com/jbox-web/active_settings/actions)
-[![Code Climate](https://codeclimate.com/github/jbox-web/active_settings/badges/gpa.svg)](https://codeclimate.com/github/jbox-web/active_settings)
-[![Test Coverage](https://codeclimate.com/github/jbox-web/active_settings/badges/coverage.svg)](https://codeclimate.com/github/jbox-web/active_settings/coverage)
+[![Maintainability](https://qlty.sh/gh/jbox-web/projects/active_settings/maintainability.svg)](https://qlty.sh/gh/jbox-web/projects/active_settings)
+[![Code Coverage](https://qlty.sh/gh/jbox-web/projects/active_settings/coverage.svg)](https://qlty.sh/gh/jbox-web/projects/active_settings)
 
 Settings in Rails.
 
