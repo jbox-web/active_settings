@@ -16,7 +16,7 @@ RSpec.describe ActiveSettings::Base do
     end
   end
 
-  context 'without namespace' do
+  context 'without environment' do
     let(:settings) do
       Class.new(ActiveSettings::Base) do
         source get_fixture_path('settings.yml')
@@ -31,18 +31,18 @@ RSpec.describe ActiveSettings::Base do
       end
     end
 
-    describe '#namespace' do
+    describe '#environment' do
       let(:settings) do
         Class.new(ActiveSettings::Base) do
           source get_fixture_path('settings.yml')
-          namespace 'foo'
+          environment 'foo'
         end
       end
 
       let(:instance) { settings.instance }
 
       it 'delegates to class method' do
-        expect(instance.namespace).to eq 'foo'
+        expect(instance.environment).to eq 'foo'
       end
     end
 
@@ -1014,12 +1014,12 @@ RSpec.describe ActiveSettings::Base do
     end
   end
 
-  context 'with namespace' do
-    context 'when namespace is development' do
+  context 'with environment' do
+    context 'when environment is development' do
       let(:settings) do
         Class.new(ActiveSettings::Base) do
-          source    get_fixture_path('settings_with_namespace.yml')
-          namespace 'development'
+          source    get_fixture_path('settings_with_environment.yml')
+          environment 'development'
         end
       end
 
@@ -1114,11 +1114,11 @@ RSpec.describe ActiveSettings::Base do
       end
     end
 
-    context 'when namespace is production' do
+    context 'when environment is production' do
       let(:settings) do
         Class.new(ActiveSettings::Base) do
-          source    get_fixture_path('settings_with_namespace.yml')
-          namespace 'production'
+          source    get_fixture_path('settings_with_environment.yml')
+          environment 'production'
 
           schema do
             required(:foo).filled
@@ -1231,8 +1231,8 @@ RSpec.describe ActiveSettings::Base do
   context 'with custom settings' do
     let(:settings) do
       Class.new(ActiveSettings::Base) do
-        source    get_fixture_path('settings_with_namespace.yml')
-        namespace 'production'
+        source    get_fixture_path('settings_with_environment.yml')
+        environment 'production'
 
         def after_initialize!
           super
