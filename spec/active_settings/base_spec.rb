@@ -1228,6 +1228,111 @@ RSpec.describe ActiveSettings::Base do
     end
   end
 
+  context 'with platform' do
+    let(:base_file) { get_fixture_path('settings_with_environment.yml') }
+
+    describe '#platform' do
+      let(:settings) do
+        Class.new(ActiveSettings::Base) do
+          source    get_fixture_path('settings_with_environment.yml')
+          platform  'docker'
+        end
+      end
+
+      let(:instance) { settings.instance }
+
+      it 'delegates to class method' do
+        expect(instance.platform).to eq 'docker'
+      end
+    end
+
+    context 'with platform only (no environment)' do
+      let(:settings) do
+        Class.new(ActiveSettings::Base) do
+          source   get_fixture_path('settings_with_environment.yml')
+          platform 'docker'
+        end
+      end
+
+      let(:instance) { settings.instance }
+
+      it 'merges platform default over base settings' do
+        expect(instance.foo).to eq 'platform_default'
+      end
+
+      it 'adds platform-specific keys' do
+        expect(instance.platform_key).to eq 'docker'
+      end
+
+      it 'keeps base keys not overridden by platform' do
+        expect(instance.nested.foo).to eq 'bar'
+      end
+    end
+
+    context 'with platform and environment' do
+      let(:settings) do
+        Class.new(ActiveSettings::Base) do
+          source      get_fixture_path('settings_with_environment.yml')
+          environment 'development'
+          platform    'docker'
+        end
+      end
+
+      let(:instance) { settings.instance }
+
+      it 'applies overrides in order: base → env → platform default → platform+env' do
+        expect(instance.foo).to eq 'platform_dev'
+      end
+
+      it 'keeps platform default keys not overridden by platform+env' do
+        expect(instance.platform_key).to eq 'docker'
+      end
+
+      it 'keeps env-specific keys not overridden by platform' do
+        expect(instance.deep.nested.warn_threshold).to eq 50
+      end
+    end
+
+    context 'when platform default file does not exist' do
+      let(:settings) do
+        Class.new(ActiveSettings::Base) do
+          source   get_fixture_path('settings_with_environment.yml')
+          platform 'unknown_platform'
+        end
+      end
+
+      let(:instance) { settings.instance }
+
+      it 'does not raise error' do
+        expect { instance }.to_not raise_error
+      end
+
+      it 'falls back to base settings' do
+        expect(instance.foo).to eq 'bar'
+      end
+    end
+
+    context 'when platform+env file does not exist' do
+      let(:settings) do
+        Class.new(ActiveSettings::Base) do
+          source      get_fixture_path('settings_with_environment.yml')
+          environment 'production'
+          platform    'docker'
+        end
+      end
+
+      let(:instance) { settings.instance }
+
+      it 'does not raise error' do
+        expect { instance }.to_not raise_error
+      end
+
+      it 'falls back to platform default' do
+        expect(instance.foo).to eq 'platform_default'
+      end
+    end
+  end
+
   context 'with custom settings' do
     let(:settings) do
       Class.new(ActiveSettings::Base) do

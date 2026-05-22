@@ -17,18 +17,35 @@ module ActiveSettings
         @environment ||= value
       end
 
+      def platform(value = nil)
+        @platform ||= value
+      end
+
     end
 
-    delegate :source, :environment, to: :class
+    delegate :source, :environment, :platform, to: :class
 
-    def initialize(file: self.class.source, environment: self.class.environment)
+    def initialize(file: self.class.source, environment: self.class.environment, platform: self.class.platform)
       raise ActiveSettings::Error::SourceFileNotDefinedError if file.nil?
 
       # load config from yaml file: settings.yml
       config = load_yaml_file(file)
+      on_settings_file_load(file.to_s, loaded: true)
 
       # load config from environmentd yaml file: settings.dev.yml
-      ActiveSettings.deep_merge_hash!(config, load_environment_file(file, environment)) if environment
+      if environment
+        ActiveSettings.deep_merge_hash!(config, load_environment_file(file, environment))
+      end
+
+      # load config from platform default file: settings_files/<platform>/default.yml
+      if platform
+        ActiveSettings.deep_merge_hash!(config, load_platform_file(file, platform))
+      end
+
+      # load config from platform+environment file: settings_files/<platform>/<env>.yml
+      if platform && environment
+        ActiveSettings.deep_merge_hash!(config, load_platform_environment_file(file, platform, environment))
+      end
 
       # run before initialize hook (to load env vars for example)
       before_initialize!
@@ -52,7 +69,29 @@ module ActiveSettings
 
     def load_environment_file(file, environment)
       ns_file = "#{File.dirname(file)}/#{File.basename(file, File.extname(file))}.#{environment}.yml"
-      return {} unless File.exist?(ns_file)
+      loaded = File.exist?(ns_file)
+      on_settings_file_load(ns_file, loaded: loaded)
+      return {} unless loaded
+
+      load_yaml_file(ns_file)
+    end
+
+
+    def load_platform_file(file, platform)
+      ns_file = "#{File.dirname(file)}/settings_files/#{platform}/default.yml"
+      loaded = File.exist?(ns_file)
+      on_settings_file_load(ns_file, loaded: loaded)
+      return {} unless loaded
+
+      load_yaml_file(ns_file)
+    end
+
+
+    def load_platform_environment_file(file, platform, environment)
+      ns_file = "#{File.dirname(file)}/settings_files/#{platform}/#{environment}.yml"
+      loaded = File.exist?(ns_file)
+      on_settings_file_load(ns_file, loaded: loaded)
+      return {} unless loaded
 
       load_yaml_file(ns_file)
     end
@@ -60,6 +99,10 @@ module ActiveSettings
 
     def load_yaml_file(file)
       ActiveSettings.load_yaml_file(file)
+    end
+
+
+    def on_settings_file_load(file, loaded:)
     end
 
 
