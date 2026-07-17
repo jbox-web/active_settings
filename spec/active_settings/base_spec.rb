@@ -16,6 +16,37 @@ RSpec.describe ActiveSettings::Base do
     end
   end
 
+  context 'when source file is empty' do
+    let(:settings) do
+      Class.new(ActiveSettings::Base) do
+        source get_fixture_path('empty.yml')
+      end
+    end
+
+    let(:instance) { settings.instance }
+
+    it 'does not raise and loads an empty config', :aggregate_failures do
+      expect { instance }.to_not raise_error
+      expect(instance.to_hash).to eq({})
+    end
+  end
+
+  context 'when source file is not a mapping' do
+    let(:settings) do
+      Class.new(ActiveSettings::Base) do
+        source get_fixture_path('invalid_scalar.yml')
+      end
+    end
+
+    let(:instance) { settings.instance }
+
+    it 'raises an explicit error' do
+      expect {
+        instance
+      }.to raise_error(ActiveSettings::Error::InvalidSettingsFileError)
+    end
+  end
+
   context 'without environment' do
     let(:settings) do
       Class.new(ActiveSettings::Base) do
@@ -120,6 +151,12 @@ RSpec.describe ActiveSettings::Base do
           expect(instance.nested.key?(:bar)).to be false
         end
       end
+
+      context 'when key exists but its value is falsy' do
+        it 'returns true for a false value' do
+          expect(instance.key?(:bool_false)).to be true
+        end
+      end
     end
 
     describe '#fetch' do
@@ -183,6 +220,12 @@ RSpec.describe ActiveSettings::Base do
           expect(instance.fetch(:path) { 'foo' }).to eq 'foo'
         end
         # rubocop:enable Style/RedundantFetchBlock
+      end
+
+      context 'when key exists with a false value' do
+        it 'returns the false value, not the default' do
+          expect(instance.fetch(:bool_false, 'default')).to be false
+        end
       end
     end
 
@@ -666,6 +709,25 @@ RSpec.describe ActiveSettings::Base do
       end
     end
 
+    describe '#merge with Procs' do
+      it 'does not eagerly evaluate stored Procs', :aggregate_failures do
+        calls = 0
+        lazy = lambda do
+          calls += 1
+          'value'
+        end
+
+        # rubocop:disable Performance/RedundantMerge
+        instance.merge!(lazy: lazy)
+        instance.merge!(nested: { added: 'y' })
+        # rubocop:enable Performance/RedundantMerge
+
+        expect(calls).to eq 0
+        expect(instance.to_hash[:lazy]).to eq 'value'
+        expect(calls).to eq 1
+      end
+    end
+
     describe '#validate!' do
       context 'when schema is not defined' do
         it 'does nothing' do
@@ -743,6 +805,14 @@ RSpec.describe ActiveSettings::Base do
         instance.freeze
         expect(instance.frozen?).to be true
         deep_config_validation(instance)
+      end
+
+      it 'also freezes nested arrays', :aggregate_failures do
+        instance.freeze
+        expect(instance.ary.frozen?).to be true
+        expect(instance.ary_of_ary.frozen?).to be true
+        expect(instance.ary_of_ary.first.frozen?).to be true
+        expect { instance.ary << 'baz' }.to raise_error(FrozenError)
       end
     end
 
@@ -1011,6 +1081,58 @@ RSpec.describe ActiveSettings::Base do
           }.to raise_error(ActiveSettings::Error::EnvPrefixNotDefinedError)
         end
       end
+
+      context 'when a value is a zero-padded number' do
+        before do
+          ActiveSettings.use_env = true
+          ENV['SETTINGS.INTEGER'] = '010'
+        end
+
+        after do
+          ActiveSettings.use_env = false
+          ENV.delete('SETTINGS.INTEGER')
+        end
+
+        it 'parses it as decimal, not octal' do
+          expect(instance.integer).to eq 10
+        end
+      end
+
+      context 'when a value is a hex string' do
+        before do
+          ActiveSettings.use_env = true
+          ENV['SETTINGS.STRING'] = '0x1a'
+        end
+
+        after do
+          ActiveSettings.use_env = false
+          ENV.delete('SETTINGS.STRING')
+        end
+
+        it 'keeps it as a string' do
+          expect(instance.string).to eq '0x1a'
+        end
+      end
+
+      context 'when a scalar key and a nested key collide' do
+        before do
+          ActiveSettings.use_env = true
+          ENV['SETTINGS.FOO'] = '5'
+          ENV['SETTINGS.FOO.BAR'] = '9'
+        end
+
+        after do
+          ActiveSettings.use_env = false
+          ENV.delete('SETTINGS.FOO')
+          ENV.delete('SETTINGS.FOO.BAR')
+        end
+
+        it 'raises an explicit conflict error' do
+          expect {
+            instance.to_hash
+          }.to raise_error(ActiveSettings::Error::EnvKeyConflictError)
+        end
+      end
     end
   end
 
@@ -1018,7 +1140,7 @@ RSpec.describe ActiveSettings::Base do
     context 'when environment is development' do
       let(:settings) do
         Class.new(ActiveSettings::Base) do
-          source    get_fixture_path('settings_with_environment.yml')
+          source get_fixture_path('settings_with_environment.yml')
           environment 'development'
         end
       end
@@ -1117,7 +1239,7 @@ RSpec.describe ActiveSettings::Base do
     context 'when environment is production' do
       let(:settings) do
         Class.new(ActiveSettings::Base) do
-          source    get_fixture_path('settings_with_environment.yml')
+          source get_fixture_path('settings_with_environment.yml')
           environment 'production'
 
           schema do
@@ -1336,7 +1458,7 @@ RSpec.describe ActiveSettings::Base do
   context 'with custom settings' do
     let(:settings) do
       Class.new(ActiveSettings::Base) do
-        source    get_fixture_path('settings_with_environment.yml')
+        source get_fixture_path('settings_with_environment.yml')
         environment 'production'
 
         def after_initialize!

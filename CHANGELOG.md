@@ -1,11 +1,20 @@
 # CHANGELOG
 
-## 1.2.0 (to come)
+## 1.2.0 (unreleased)
 
-* Add support of Ruby 3.0
-* Add support of JRuby
-* Bump required Ruby version to 2.6.0
-* Bump to ActiveSupport 5.2.x
+* Bump required Ruby version to 3.2.0
+* Bump to ActiveSupport >= 7.0
+* Rename `namespace` to `environment`
+* Add per-`platform` settings files (`settings_files/<platform>/…`)
+* Add `on_settings_file_load` hook
+* Add environment-variable overrides (`use_env`, `env_prefix`, `env_separator`, …)
+* Add settings validation via dry-schema (`schema` / `validate!`)
+* Allow storing `Proc` values (evaluated lazily), preserved across `merge!`
+* Add `fail_on_missing` option
+* Fix `key?`/`fetch` for keys whose value is `false` or `nil`
+* Parse env values as strict base-10 (no accidental octal/hex coercion)
+* Deep-freeze now also freezes nested arrays
+* Raise explicit errors on non-mapping settings files and conflicting env keys
 
 ## 1.1.0 (2020/04/04)
 

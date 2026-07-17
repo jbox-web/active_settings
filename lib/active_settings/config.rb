@@ -9,8 +9,10 @@ module ActiveSettings
     delegate :each, :each_key, :each_value, :collect, :keys, :empty?, to: :marshal_dump
 
 
+    # Tests key *existence*, not the truthiness of its value:
+    # a key whose value is `false` or `nil` still exists.
     def key?(key)
-      self[key] ? true : false
+      marshal_dump.key?(key.to_sym)
     end
 
 
@@ -38,7 +40,9 @@ module ActiveSettings
 
 
     def merge!(other)
-      current = to_hash
+      # Use the raw hash (Procs left untouched) so merging does not eagerly
+      # evaluate lazy values stored as Procs.
+      current = ActiveSettings.to_raw_hash(self)
       other = other.dup
       ActiveSettings.deep_merge_hash!(current, other)
       marshal_load(ActiveSettings.from_hash(current).marshal_dump)

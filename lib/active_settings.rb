@@ -41,6 +41,12 @@ module ActiveSettings
       traverse_config(config)
     end
 
+    # Same as `to_hash` but leaves Procs untouched instead of calling them.
+    # Used by Config#merge! to avoid evaluating lazy values.
+    def to_raw_hash(config)
+      traverse_config(config, evaluate_procs: false)
+    end
+
     def deep_freeze(config)
       freeze_config(config)
     end
@@ -56,6 +62,8 @@ module ActiveSettings
         new_val =
           case value
           when Hash
+            # Escape hatch: `{ 'type' => 'hash', 'contents' => {...} }` keeps the
+            # raw Hash (accessible by []/dig) instead of wrapping it into a Config.
             value['type'] == 'hash' ? value['contents'] : from_hash(value)
           when Array
             value.collect { |e| e.instance_of?(Hash) ? from_hash(e) : e }
@@ -83,7 +91,7 @@ module ActiveSettings
 
     # Borrowed from [config gem](https://github.com/rubyconfig/config/blob/master/lib/config/options.rb)
     # See: https://github.com/rubyconfig/config/commit/351c819f75d53aa5621a226b5957c79ac82ded11
-    # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
+    # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/BlockLength
     def from_env(env)
       return {} unless ActiveSettings.use_env
       return {} if env.nil? || env.empty?
@@ -112,35 +120,56 @@ module ActiveSettings
         end
 
         leaf = keys[0...-1].inject(hash) do |h, key|
+          existing = h[key]
+          if !existing.nil? && !existing.is_a?(Hash)
+            raise ActiveSettings::Error::EnvKeyConflictError,
+                  "ENV variable '#{variable}' conflicts with a scalar value already set for '#{key}'"
+          end
+
           h[key] ||= {}
         end
 
-        leaf[keys.last] = ActiveSettings.env_parse_values ? cast_value(value) : value
+        last = keys.last
+        if leaf[last].is_a?(Hash)
+          raise ActiveSettings::Error::EnvKeyConflictError,
+                "ENV variable '#{variable}' conflicts with a nested mapping already set for '#{last}'"
+        end
+
+        leaf[last] = ActiveSettings.env_parse_values ? cast_value(value) : value
       end
 
       hash
     end
-    # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
+    # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/BlockLength
 
+    # NOTE: the file content is evaluated as ERB before being parsed as YAML,
+    # so settings sources MUST be trusted (ERB executes arbitrary Ruby).
+    # `aliases: true` is always supported since we require Ruby >= 3.2 (Psych 4).
     def load_yaml_file(file)
-      YAML.load(ERB.new(File.read(file)).result, aliases: true).to_hash
-    rescue ArgumentError
-      YAML.load(ERB.new(File.read(file)).result).to_hash
+      data = YAML.load(ERB.new(File.read(file)).result, aliases: true)
+      return {} if data.nil?
+
+      unless data.is_a?(Hash)
+        raise ActiveSettings::Error::InvalidSettingsFileError,
+              "settings file '#{file}' must contain a YAML mapping, got #{data.class}"
+      end
+
+      data
     end
 
     private
 
     # rubocop:disable Metrics/MethodLength
-    def traverse_config(hash)
+    def traverse_config(hash, evaluate_procs: true)
       result = {}
       hash.each do |k, v|
         result[k] =
           if v.instance_of?(ActiveSettings::Config)
-            traverse_config(v)
+            traverse_config(v, evaluate_procs: evaluate_procs)
           elsif v.instance_of?(Array)
-            traverse_array(v)
+            traverse_array(v, evaluate_procs: evaluate_procs)
           elsif v.instance_of?(Proc)
-            v.call
+            evaluate_procs ? v.call : v
           else
             v
           end
@@ -148,14 +177,14 @@ module ActiveSettings
       result
     end
 
-    def traverse_array(array)
+    def traverse_array(array, evaluate_procs: true)
       array.map do |value|
         if value.instance_of?(ActiveSettings::Config)
-          traverse_config(value)
+          traverse_config(value, evaluate_procs: evaluate_procs)
         elsif value.instance_of?(Array)
-          traverse_array(value)
+          traverse_array(value, evaluate_procs: evaluate_procs)
         elsif value.instance_of?(Proc)
-          value.call
+          evaluate_procs ? value.call : value
         else
           value
         end
@@ -174,27 +203,38 @@ module ActiveSettings
     end
 
     def freeze_array(array)
-      array.map do |value|
+      array.each do |value|
         if value.instance_of?(ActiveSettings::Config)
           value.freeze
         elsif value.instance_of?(Array)
           freeze_array(value)
         end
       end
+      array.freeze
     end
 
     BOOLEAN_MAPPING = { 'true' => true, 'false' => false }.freeze
     private_constant :BOOLEAN_MAPPING
 
+    # Only base-10 literals are coerced, so zero-padded values keep their meaning
+    # ("010" => 10, not octal 8) and hex/underscored strings stay strings.
+    INTEGER_MATCHER = /\A[+-]?\d+\z/
+    private_constant :INTEGER_MATCHER
+
+    FLOAT_MATCHER = /\A[+-]?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\z/
+    private_constant :FLOAT_MATCHER
+
     def cast_value(val)
       BOOLEAN_MAPPING.fetch(val) { auto_type(val) }
     end
 
-    # rubocop:disable Style/RescueModifier
     def auto_type(val)
-      Integer(val) rescue Float(val) rescue val
+      case val
+      when INTEGER_MATCHER then Integer(val, 10)
+      when FLOAT_MATCHER   then Float(val)
+      else val
+      end
     end
-    # rubocop:enable Style/RescueModifier
 
   end
   # rubocop:enable Metrics/ClassLength
