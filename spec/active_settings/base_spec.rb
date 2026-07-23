@@ -407,6 +407,11 @@ RSpec.describe ActiveSettings::Base do
             instance.nested.path
           }.to raise_error(KeyError).with_message('key not found: :path')
         end
+
+        it 'does not raise when accessing an existing key', :aggregate_failures do
+          expect { instance.string }.to_not raise_error
+          expect(instance.string).to eq 'foo'
+        end
       end
     end
 
@@ -726,6 +731,26 @@ RSpec.describe ActiveSettings::Base do
         expect(instance.to_hash[:lazy]).to eq 'value'
         expect(calls).to eq 1
       end
+
+      it 'does not eagerly evaluate Procs stored inside arrays', :aggregate_failures do
+        calls = 0
+        lazy = lambda do
+          calls += 1
+          'value'
+        end
+
+        instance.list = [lazy]
+
+        # merge! rebuilds the config via to_raw_hash, which traverses the array
+        # without evaluating the Proc.
+        # rubocop:disable Performance/RedundantMerge
+        instance.merge!(other: 'x')
+        # rubocop:enable Performance/RedundantMerge
+
+        expect(calls).to eq 0
+        expect(instance.to_hash[:list]).to eq ['value']
+        expect(calls).to eq 1
+      end
     end
 
     describe '#validate!' do
@@ -774,6 +799,26 @@ RSpec.describe ActiveSettings::Base do
             expect {
               with_invalid_schema.instance.validate!
             }.to raise_error(ActiveSettings::Validation::Error)
+          end
+        end
+
+        context 'when a nested schema key is invalid' do
+          let(:with_invalid_nested_schema) do
+            Class.new(ActiveSettings::Base) do
+              source get_fixture_path('settings.yml')
+
+              schema do
+                required(:nested).schema do
+                  required(:absent).filled
+                end
+              end
+            end
+          end
+
+          it 'flattens the nested error path in the message' do
+            expect {
+              with_invalid_nested_schema.instance.validate!
+            }.to raise_error(ActiveSettings::Validation::Error, /NESTED\.ABSENT/)
           end
         end
       end
@@ -1131,6 +1176,101 @@ RSpec.describe ActiveSettings::Base do
           expect {
             instance.to_hash
           }.to raise_error(ActiveSettings::Error::EnvKeyConflictError)
+        end
+      end
+
+      context 'when a scalar key collides with a nested mapping set first' do
+        before do
+          ActiveSettings.use_env = true
+          # The longer (nested) variable is set first so the scalar one lands
+          # on a key already holding a Hash.
+          ENV['SETTINGS.FOO.BAR'] = '9'
+          ENV['SETTINGS.FOO'] = '5'
+        end
+
+        after do
+          ActiveSettings.use_env = false
+          ENV.delete('SETTINGS.FOO.BAR')
+          ENV.delete('SETTINGS.FOO')
+        end
+
+        it 'raises an explicit conflict error' do
+          expect {
+            instance.to_hash
+          }.to raise_error(ActiveSettings::Error::EnvKeyConflictError)
+        end
+      end
+
+      context 'when env_converter is nil' do
+        before do
+          ActiveSettings.use_env = true
+          ActiveSettings.env_converter = nil
+          ENV['SETTINGS.MixedKey'] = 'kept'
+        end
+
+        after do
+          ActiveSettings.use_env = false
+          ActiveSettings.env_converter = :downcase
+          ENV.delete('SETTINGS.MixedKey')
+        end
+
+        it 'keeps the key case unchanged', :aggregate_failures do
+          expect(instance.to_hash).to have_key(:MixedKey)
+          expect(instance.to_hash).to_not have_key(:mixedkey)
+        end
+      end
+
+      context 'when env_converter is invalid' do
+        before do
+          ActiveSettings.use_env = true
+          ActiveSettings.env_converter = :upcase
+          ENV['SETTINGS.STRING'] = 'value'
+        end
+
+        after do
+          ActiveSettings.use_env = false
+          ActiveSettings.env_converter = :downcase
+          ENV.delete('SETTINGS.STRING')
+        end
+
+        it 'raises an explicit error' do
+          expect {
+            instance.to_hash
+          }.to raise_error(RuntimeError, /Invalid ENV variables name converter/)
+        end
+      end
+
+      context 'when env_parse_values is false' do
+        before do
+          ActiveSettings.use_env = true
+          ActiveSettings.env_parse_values = false
+          ENV['SETTINGS.INTEGER'] = '42'
+        end
+
+        after do
+          ActiveSettings.use_env = false
+          ActiveSettings.env_parse_values = true
+          ENV.delete('SETTINGS.INTEGER')
+        end
+
+        it 'keeps the raw string value' do
+          expect(instance.integer).to eq '42'
+        end
+      end
+
+      context 'when a value is a float' do
+        before do
+          ActiveSettings.use_env = true
+          ENV['SETTINGS.FLOAT'] = '2.5'
+        end
+
+        after do
+          ActiveSettings.use_env = false
+          ENV.delete('SETTINGS.FLOAT')
+        end
+
+        it 'casts it to a Float' do
+          expect(instance.float).to eq 2.5
         end
       end
     end
@@ -1533,6 +1673,51 @@ RSpec.describe ActiveSettings::Base do
           ],
           embedded_ruby: 6,
         })
+      end
+    end
+  end
+
+  describe '#initialize with a block' do
+    let(:settings) do
+      Class.new(ActiveSettings::Base) do
+        source get_fixture_path('settings.yml')
+
+        attr_reader :custom
+
+        # Subclasses extend initialization by overriding #initialize and
+        # calling `super do ... end`; the block runs via `yield` in Base.
+        def initialize(**)
+          super do
+            @custom = 'ran'
+          end
+        end
+      end
+    end
+
+    let(:instance) { settings.instance }
+
+    it 'yields the block during initialization' do
+      expect(instance.custom).to eq 'ran'
+    end
+  end
+
+  describe '.from_hash' do
+    context 'with the raw-hash escape hatch' do
+      it 'keeps the contents as a plain Hash instead of a Config', :aggregate_failures do
+        settings = ActiveSettings.from_hash(
+          'raw' => { 'type' => 'hash', 'contents' => { 'a' => 1, 'b' => 2 } }
+        )
+
+        expect(settings.raw).to eq('a' => 1, 'b' => 2)
+        expect(settings.raw).to be_a(Hash)
+      end
+    end
+
+    context 'with a key that responds to to_s but not to_sym' do
+      it 'stringifies the key before storing it' do
+        settings = ActiveSettings.from_hash(1 => 'value')
+
+        expect(settings.to_hash).to eq('1': 'value')
       end
     end
   end
